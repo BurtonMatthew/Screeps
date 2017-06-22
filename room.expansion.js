@@ -4,24 +4,16 @@ var strategyExpansion = require('stategy.expansion');
 
 function getBodyPartsUpgrader(room)
 {
+    // If we don't have a storage we actually have to haul, so use the generic formula
     if(room.storage === undefined)
         return getBodyPartsBuilder(room);
-        
-    var roomEnergy = room.energyCapacityAvailable - 100;
-    var workParts = 0;
-    var parts = [MOVE, CARRY];
-    while(workParts < 15 && roomEnergy >= 100)
-    {
+    
+    var parts = [MOVE, CARRY];    
+    const affordableParts = Math.floor((room.energyCapacityAvailable - 100) / 100);
+    const workParts = Math.min(affordableParts, 15);
+    
+    for(var i=0; i<workParts; ++i)
         parts.push(WORK);
-        workParts++;
-        roomEnergy -= 100;
-        
-        if(workParts != 5 && workParts % 5 == 0 && roomEnergy >= 50)
-        {
-            parts.push(CARRY);
-            roomEnergy -= 50;
-        }
-    }
         
     return parts;
 }
