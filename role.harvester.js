@@ -21,7 +21,7 @@ var roleHarvester = {
             });
             }
             
-            if(!target && creep.room.storage !== "undefined" && creep.room.storage.store[RESOURCE_ENERGY] < creep.room.storage.storeCapacity)
+            if(!target && creep.room.storage !== undefined && creep.room.storage.store[RESOURCE_ENERGY] < creep.room.storage.storeCapacity)
             {
                 target = creep.room.storage;
             }

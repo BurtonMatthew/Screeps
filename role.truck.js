@@ -16,7 +16,7 @@ var roleTruck = {
         {
             const container = creep.pos.findClosestByRange(FIND_STRUCTURES, {filter: (struct) => struct.structureType == STRUCTURE_CONTAINER && struct.store[RESOURCE_ENERGY] < struct.storeCapacity});
             var target = false;
-            if(!target && "storage" in creep.room && creep.room.storage.store[RESOURCE_ENERGY] < creep.room.storage.storeCapacity)
+            if(!target && creep.room.storage !== undefined && creep.room.storage.store[RESOURCE_ENERGY] < creep.room.storage.storeCapacity)
             {
                 target = creep.room.storage;
             }

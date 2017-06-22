@@ -1,6 +1,6 @@
 function memorize(room)
 {
-    if(! ("mapInfo" in Memory))
+    if(Memory.mapInfo !== undefined)
     {
         var mapInfo = {};
         mapInfo.unexploredRooms = [];
@@ -35,7 +35,7 @@ function memorize(room)
     }
     memorizedRoomInfo.minerals = mineralData;
     
-    if(typeof room.controller === "undefined")
+    if(room.controller === undefined)
     {
         memorizedRoomInfo.hasController = false;
     }

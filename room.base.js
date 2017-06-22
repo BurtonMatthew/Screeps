@@ -10,9 +10,9 @@ var roomBase = {
         const maintenances = _.filter(room.find(FIND_MY_CREEPS), (creep) => creep.memory.role == 'maintenance');
         const upgraders = _.filter(room.find(FIND_MY_CREEPS), (creep) => creep.memory.role == 'upgrader');
         const explorers = _.filter(Game.creeps, (creep) => creep.memory.role == 'explorer');
-        const test1 = _.filter(room.find(FIND_MY_CREEPS), (creep) => creep.memory.role == 'staticharvester');
-        const test2 = _.filter(room.find(FIND_MY_CREEPS), (creep) => creep.memory.role == 'linkupgrader');
-        const test3 = _.filter(room.find(FIND_MY_CREEPS), (creep) => creep.memory.role == 'refiller');
+        const staticharvesters = _.filter(room.find(FIND_MY_CREEPS), (creep) => creep.memory.role == 'staticharvester');
+        const linkupgraders = _.filter(room.find(FIND_MY_CREEPS), (creep) => creep.memory.role == 'linkupgrader');
+        const refillers = _.filter(room.find(FIND_MY_CREEPS), (creep) => creep.memory.role == 'refiller');
         const conSites = room.find(FIND_CONSTRUCTION_SITES);
         const repairSites = room.find(FIND_STRUCTURES, { filter: (structure) => { return structure.hits < structure.hitsMax *.8; }});
         const towers = room.find(FIND_MY_STRUCTURES, {filter: (structure) => { return structure.structureType == STRUCTURE_TOWER; }});
@@ -46,11 +46,11 @@ var roomBase = {
         {
             Game.spawns['Main'].createCreep( [WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE], 'Upgrader' + Math.floor(Math.random() * 1000000), { role: 'upgrader', full: false, home: "W3N4" });
         }
-        else if(test1.length < 2)
+        else if(staticharvesters.length < 2)
         {
             Game.spawns['Main'].createCreep( [WORK, WORK, WORK, CARRY, MOVE], 'SHarvester' + Math.floor(Math.random() * 1000000), { role: 'staticharvester', full: false, linkId: "a5bf1c06c714504", sourceId: "b357077426772ba" });
         }
-        else if(test2.length < 2)
+        else if(linkupgraders.length < 2)
         {
             Game.spawns['Main'].createCreep( [WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, MOVE], 'LUpgrader' + Math.floor(Math.random() * 1000000), { role: 'linkupgrader', full: false, linkId: "bc5c202cb431753" });
         }
@@ -58,16 +58,8 @@ var roomBase = {
         {
             
         }
-        //else if(Game.creeps["JERK"] === undefined)
-        //{
-        //    Game.spawns['Main'].createCreep( [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK], "JERK", { role: 'fighter', home: "W3N1" });
-        //}
-        else
-        {
-            //Game.spawns['Main'].createCreep( [WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE], 'Builder' + Math.floor(Math.random() * 1000000), { role: 'builder', home: "W5N1" });
-        }
         /*
-        else if(test3.length < 1)
+        else if(refillers.length < 1)
         {
             Game.spawns['Main'].createCreep( [MOVE,MOVE,CARRY,CARRY], "Refiller" + Math.floor(Math.random() * 1000000), { role: 'refiller' });
         }

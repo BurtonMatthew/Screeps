@@ -328,12 +328,6 @@ function findEmptyAdjMaxSpace(room, x, y, used)
     return bestTile;
 }
 
-function examineSite(room, sites, i, used)
-{
-    
-    
-}
-
 module.exports = {
     visualize,
     createLayout,

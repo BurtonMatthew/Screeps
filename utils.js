@@ -24,7 +24,7 @@ var utils =
         const container = creep.pos.findClosestByRange(FIND_STRUCTURES, {filter: (struct) => struct.structureType == STRUCTURE_CONTAINER && struct.store[RESOURCE_ENERGY] > 50});
         
         
-        if("storage" in creep.room && creep.room.storage.store[RESOURCE_ENERGY] > 0)
+        if(creep.room.storage !== undefined && creep.room.storage.store[RESOURCE_ENERGY] > 0)
         {
             if(creep.withdraw(creep.room.storage, RESOURCE_ENERGY, 
                 Math.min(creep.carryCapacity - creep.carry.energy, creep.room.storage.store[RESOURCE_ENERGY])) == ERR_NOT_IN_RANGE) 
