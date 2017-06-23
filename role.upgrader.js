@@ -24,7 +24,12 @@ var roleUpgrader = {
             
             if(creep.memory.linkId !== undefined)
             {
-                Game.getObjectById(creep.memory.linkId)
+                const link = Game.getObjectById(creep.memory.linkId);
+                if(creep.withdraw(link, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE)
+                    creep.moveTo(link);
+                    
+                if(link.energy <= 200 /*&& creep.room.memory.linkReqEnergy === undefined*/)
+                    creep.room.memory.linkReqEnergy = link.id;
             }
             
             if(creep.room.storage !== undefined)
@@ -32,7 +37,7 @@ var roleUpgrader = {
                 creep.withdraw(creep.room.storage, RESOURCE_ENERGY);
             }
             
-            if(creep.carry.energy == 0)
+            if(creep.memory.linkId === undefined && creep.carry.energy == 0)
             {
                 creep.memory.full = false;
             }

@@ -7,10 +7,17 @@ var roleStorageLink = {
         const link = Game.getObjectById(creep.memory.linkId);
         if(link.energy > 0)
         {
-            if(creep.withdraw(link, RESOURCE_ENERGY, Math.min(creep.carryCapacity - creep.carry.energy, link.energy)) == ERR_NOT_IN_RANGE) 
-            {
-                creep.moveTo(link);
-            }
+            //if(creep.room.memory.linkReqEnergy === undefined)
+            //{
+                if(creep.withdraw(link, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) 
+                {
+                    creep.moveTo(link);
+                }
+            //}
+            //else
+            //{
+                
+            //}
         }
         else
         {

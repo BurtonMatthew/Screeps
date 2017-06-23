@@ -54,6 +54,7 @@ var roomExpansion = {
         const spawners = room.find(FIND_MY_STRUCTURES, {filter: (struct) => struct.structureType == STRUCTURE_SPAWN});
         const sources = room.find(FIND_SOURCES);
         const conSites = room.find(FIND_CONSTRUCTION_SITES);
+        const minerals = room.find(FIND_MINERALS);
         
         for(var i=0; i<spawners.length; ++i)
         {
@@ -61,6 +62,13 @@ var roomExpansion = {
             for(var j=0, len=sources.length; j<len && !anySpawn; ++j)
             {
                 anySpawn |= strategyHarvest.spawn(spawners[i], sources[j]);
+            }
+            
+            for(var j=0, len=minerals.length; j<len && !anySpawn; ++j)
+            {
+                const extractor = room.lookForAt(LOOK_STRUCTURES, minerals[j]);
+                if(extractor.length > 0)
+                    anySpawn |= strategyHarvest.spawn(spawners[i], minerals[j]);
             }
             
             
@@ -112,7 +120,6 @@ var roomExpansion = {
         }
         else if(room.name == "W1N3")
         {
-            //console.log("in here");
             //room.memory.layout = roomLayout.createLayout(room);
         }
             
@@ -124,21 +131,20 @@ var roomExpansion = {
             for(var i=0; i<towers.length; ++i)
             {
                 var towerTarget = towers[i].pos.findClosestByRange(FIND_HOSTILE_CREEPS);
-                if(i==1)
-                    towers[i].attack(Game.getObjectById("8b096aaa106be09"));
-                else
                     towers[i].attack(towerTarget);
             }
         }
         
         if(room.memory.linkReqEnergy !== undefined)
         {
+            const reqLink = Game.getObjectById(room.memory.linkReqEnergy);
+            const reqEnergy = reqLink.energyCapacity - reqLink.energy;
             const links = room.find(FIND_MY_STRUCTURES, {filter: (structure) => { return structure.structureType == STRUCTURE_LINK; }});
             for(var i=0, len=links.length; i<len; ++i)
             {
-                if(links[i].id != room.memory.linkReqEnergy && links[i].cooldown == 0 && links[i].energy == links[i].energyCapacity)
+                if(links[i].id != room.memory.linkReqEnergy && links[i].cooldown == 0 && links[i].energy >= reqEnergy)
                 {
-                    links[i].transferEnergy(Game.getObjectById(room.memory.linkReqEnergy));
+                    links[i].transferEnergy(reqLink, reqEnergy);
                     room.memory.linkReqEnergy = undefined;
                     break;
                 }

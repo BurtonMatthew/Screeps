@@ -39,7 +39,7 @@ var roleHauler = {
                 creep.moveTo(spawner);
             }
             
-            if(creep.carry.energy == 0)
+            if(_.sum(creep.carry) == 0)
             {
                 creep.memory.full = false;
             }
@@ -52,7 +52,7 @@ var roleHauler = {
                 creep.moveTo(container);
             }
             
-            if(creep.carryCapacity == creep.carry.energy)
+            if(creep.carryCapacity == _.sum(creep.carry))
             {
                 creep.memory.full = true;
             }

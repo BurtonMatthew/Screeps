@@ -21,6 +21,10 @@ var roleBuilder = {
                     creep.moveTo(target);
                 }
             }
+            else
+            {
+                creep.suicide();
+            }
             
             if(creep.carry.energy == 0)
             {

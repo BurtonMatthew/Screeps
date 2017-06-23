@@ -16,12 +16,20 @@ var roomBase = {
         const repairSites = room.find(FIND_STRUCTURES, { filter: (structure) => { return structure.hits < structure.hitsMax *.8; }});
         const towers = room.find(FIND_MY_STRUCTURES, {filter: (structure) => { return structure.structureType == STRUCTURE_TOWER; }});
         const sources = room.find(FIND_SOURCES);
+        const minerals = room.find(FIND_MINERALS);
         const creeps = room.find(FIND_MY_CREEPS);
         
         var anySpawn = false;
         for(var j=0, len=sources.length; j<len && !anySpawn; ++j)
         {
             anySpawn |= strategyHarvest.spawn(Game.spawns['Main'], sources[j]);
+        }
+        
+        for(var j=0, len=minerals.length; j<len && !anySpawn; ++j)
+        {
+            const extractor = room.lookForAt(LOOK_STRUCTURES, minerals[j]);
+            if(extractor.length > 0)
+                anySpawn |= strategyHarvest.spawn(Game.spawns['Main'], minerals[j]);
         }
         
         //if(hostiles.length > 0)
@@ -48,12 +56,12 @@ var roomBase = {
         }
         else if(upgraders.length < 1)
         {
-            Game.spawns['Main'].createCreep( [WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE], 'Upgrader' + Math.floor(Math.random() * 1000000), { role: 'upgrader', full: false, home: "W3N4" });
+            Game.spawns['Main'].createCreep( [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE], 'Upgrader' + Math.floor(Math.random() * 1000000), { role: 'upgrader', full: true, home: "W3N4", linkId: "bc5c202cb431753" });
         }
-        else if(linkupgraders.length < 2)
-        {
-            Game.spawns['Main'].createCreep( [WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, MOVE], 'LUpgrader' + Math.floor(Math.random() * 1000000), { role: 'linkupgrader', full: false, linkId: "bc5c202cb431753" });
-        }
+        //else if(linkupgraders.length < 2)
+        //{
+        //    Game.spawns['Main'].createCreep( [WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, MOVE], 'LUpgrader' + Math.floor(Math.random() * 1000000), { role: 'linkupgrader', full: false, linkId: "bc5c202cb431753" });
+        //}
         else if(strategyExpansion.spawn(Game.spawns['Main']))
         {
             
@@ -77,24 +85,16 @@ var roomBase = {
                 towers[i].attack(towerTarget);
             }
         }
-        
-         var link1 = Game.getObjectById("a5bf1c06c714504");
-         var link2 = Game.getObjectById("bc5c202cb431753");
-         
-         if(link1.energy > 400 && link2.energy == 0)
-         {
-             link1.transferEnergy(link2);
-         }
          
         if(room.memory.linkReqEnergy !== undefined)
         {
             const links = room.find(FIND_MY_STRUCTURES, {filter: (structure) => { return structure.structureType == STRUCTURE_LINK; }});
             for(var i=0, len=links.length; i<len; ++i)
             {
-                if(links[i] != link1 && links[i].id != room.memory.linkReqEnergy && links[i].cooldown == 0 && links[i].energy == links[i].energyCapacity)
+                if(links[i].id != room.memory.linkReqEnergy && links[i].cooldown == 0 && links[i].energy == links[i].energyCapacity)
                 {
                     links[i].transferEnergy(Game.getObjectById(room.memory.linkReqEnergy));
-                    room.memory.linkReqEnergy = undefined;
+                    delete room.memory.linkReqEnergy;
                     break;
                 }
             }

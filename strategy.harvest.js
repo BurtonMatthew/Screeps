@@ -40,7 +40,7 @@ function spawn(spawner, source)
                 const container = source.pos.findClosestByRange(FIND_STRUCTURES, {filter: (struct) => struct.structureType == STRUCTURE_CONTAINER });
                 if(container)
                 {
-                    spawner.createCreep(getBodyPartsHauler(source), "Hauler" + source.id + i, 
+                    spawner.createCreep(getBodyPartsHauler(source, isMineral), "Hauler" + source.id + i, 
                         { role: 'hauler', full: false, containerId: container.id, resourceType: (isMineral ? source.mineralType : RESOURCE_ENERGY) });
                     return true;
                 }
@@ -70,8 +70,9 @@ function spawn(spawner, source)
 function getBodyPartsHarvester(source, hasLink, isMineral)
 {
     const maxAffordableWorkParts = Math.floor((source.room.energyCapacityAvailable - (hasLink ? 100 : 50)) / 100);
-    const maxWorkParts = isMineral ?  Math.ceil(source.mineralAmount / source.ticksToRegeneration)
-                                    : (Math.ceil(source.energyCapacity / 600)); // /600 derived from 300 regen ticks, 2 per part per tick
+    const maxWorkParts = isMineral ?  10 : (Math.ceil(source.energyCapacity / 600)); // /600 derived from 300 regen ticks, 2 per part per tick
+    console.log(source.mineralAmount);
+    console.log(source.ticksToRegeneration);
     var parts = [MOVE];
     if(hasLink)
         parts.push(CARRY);
@@ -83,11 +84,11 @@ function getBodyPartsHarvester(source, hasLink, isMineral)
     return parts;
 }
 
-function getBodyPartsHauler(source)
+function getBodyPartsHauler(source, isMineral)
 {
     var parts = [];
     const maxAffordableParts = Math.floor(source.room.energyCapacityAvailable  / 100);
-    const maxUsefulParts = 8;
+    const maxUsefulParts = isMineral ? 2 : 8;
     const numPart = Math.min(maxAffordableParts, maxUsefulParts);
     for(var i=0; i<numPart; ++i)
     {
