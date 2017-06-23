@@ -23,11 +23,14 @@ var roleStaticHarvester = {
             {
                 creep.moveTo(creep.memory.standX, creep.memory.standY);
             }
-            if(creep.harvest(source) == ERR_NOT_IN_RANGE) 
+            const harvestError = creep.harvest(source)
+            if(harvestError == ERR_NOT_IN_RANGE) 
             {
-                {
-                    creep.moveTo(source);
-                }
+                creep.moveTo(source);
+            }
+            else if(harvestError == OK && creep.memory.travelTime === undefined)
+            {
+                creep.memory.travelTime = CREEP_LIFE_TIME - creep.ticksToLive;
             }
             
             var link = Game.getObjectById(creep.memory.linkId);

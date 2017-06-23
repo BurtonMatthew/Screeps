@@ -6,8 +6,20 @@ function spawn(spawner, source)
         return false;
     }
     
-    const harvestCreep = Game.creeps["Harvest" + source.id];
-    if(harvestCreep === undefined)
+    const harvestCreepA = Game.creeps["HarvestA" + source.id];
+    const harvestCreepB = Game.creeps["HarvestB" + source.id];
+    var harvestCreep;
+    if(harvestCreepA !== undefined && harvestCreepB !== undefined)
+        harvestCreep = harvestCreepA.ticksToLive > harvestCreepB.ticksToLive ? harvestCreepA : harvestCreepB;
+    else if(harvestCreepA !== undefined)
+        harvestCreep = harvestCreepA;
+    else if(harvestCreepB !== undefined)
+        harvestCreep = harvestCreepB;
+    else
+        harvestCreep === undefined;
+    
+    if(harvestCreep === undefined  
+        || (harvestCreep.memory.travelTime !== undefined && harvestCreep.ticksToLive < harvestCreep.memory.travelTime + (harvestCreep.body.length * CREEP_SPAWN_TIME)))
     {
         
         var creepMem = { role: 'staticharvester', full: false, sourceId: source.id, home: source.room.name };
@@ -24,7 +36,7 @@ function spawn(spawner, source)
             creepMem.standX = container.pos.x;
             creepMem.standY = container.pos.y;
         }
-        spawner.createCreep(getBodyPartsHarvester(source, hasLink, isMineral), "Harvest" + source.id, creepMem);
+        spawner.createCreep(getBodyPartsHarvester(source, hasLink, isMineral), "Harvest" + (harvestCreep == harvestCreepB ? "A" : "B") + source.id, creepMem);
         return true;
     }
     else if(harvestCreep.getActiveBodyparts(CARRY) == 0) // Drop miner
