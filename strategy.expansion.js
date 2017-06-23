@@ -62,8 +62,8 @@ function getBestExpansionRoom()
         if(!room.hasController || "owner" in room.controller)
             continue;
         
-        var totalScore = (sourceScore(room)             * 0.40)
-                        +(distanceScore(roomName)       * 0.30)
+        var totalScore = (sourceScore(room)             * 0.55)
+                        +(distanceScore(roomName)       * 0.15)
                         +(compactScore(room)            * 0.05)
                         +(mineralScore(myMinerals, room)* 0.20)
                         +(hostileExitsScore(roomName)   * 0.05);
