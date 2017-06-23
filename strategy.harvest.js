@@ -1,5 +1,11 @@
 function spawn(spawner, source)
 {
+    const isMineral = "mineralAmount" in source
+    if(isMineral && source.mineralAmount == 0)
+    {
+        return false;
+    }
+    
     const harvestCreep = Game.creeps["Harvest" + source.id];
     if(harvestCreep === undefined)
     {
@@ -7,8 +13,9 @@ function spawn(spawner, source)
         var creepMem = { role: 'staticharvester', full: false, sourceId: source.id, home: source.room.name };
         // Look for a link
         const link = source.pos.findClosestByRange(FIND_MY_STRUCTURES, {filter: (struct) => struct.structureType == STRUCTURE_LINK });
+        const hasLink = !isMineral && link && source.pos.inRangeTo(link, 2);
         const container = source.pos.findClosestByRange(FIND_STRUCTURES, {filter: (struct) => struct.structureType == STRUCTURE_CONTAINER });
-        if(link && source.pos.inRangeTo(link, 2))
+        if(hasLink)
         {
             creepMem.linkId = link.id;
         }
@@ -17,7 +24,7 @@ function spawn(spawner, source)
             creepMem.standX = container.pos.x;
             creepMem.standY = container.pos.y;
         }
-        spawner.createCreep(getBodyPartsHarvester(source, link), "Harvest" + source.id, creepMem);
+        spawner.createCreep(getBodyPartsHarvester(source, hasLink, isMineral), "Harvest" + source.id, creepMem);
         return true;
     }
     else if(harvestCreep.getActiveBodyparts(CARRY) == 0) // Drop miner
@@ -33,7 +40,8 @@ function spawn(spawner, source)
                 const container = source.pos.findClosestByRange(FIND_STRUCTURES, {filter: (struct) => struct.structureType == STRUCTURE_CONTAINER });
                 if(container)
                 {
-                    spawner.createCreep(getBodyPartsHauler(source), "Hauler" + source.id + i, { role: 'hauler', full: false, containerId: container.id });
+                    spawner.createCreep(getBodyPartsHauler(source), "Hauler" + source.id + i, 
+                        { role: 'hauler', full: false, containerId: container.id, resourceType: (isMineral ? source.mineralType : RESOURCE_ENERGY) });
                     return true;
                 }
             }
@@ -59,10 +67,11 @@ function spawn(spawner, source)
     return false;
 }
 
-function getBodyPartsHarvester(source, hasLink)
+function getBodyPartsHarvester(source, hasLink, isMineral)
 {
     const maxAffordableWorkParts = Math.floor((source.room.energyCapacityAvailable - (hasLink ? 100 : 50)) / 100);
-    const maxWorkParts = Math.ceil(source.energyCapacity / 600); // /600 derived from 300 regen ticks, 2 per part per tick
+    const maxWorkParts = isMineral ?  Math.ceil(source.mineralAmount / source.ticksToRegeneration)
+                                    : (Math.ceil(source.energyCapacity / 600)); // /600 derived from 300 regen ticks, 2 per part per tick
     var parts = [MOVE];
     if(hasLink)
         parts.push(CARRY);

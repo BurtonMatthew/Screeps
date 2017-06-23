@@ -1,5 +1,5 @@
 var mapM = require('map.memory');
-var expansion = require('stategy.expansion');
+var expansion = require('strategy.expansion');
 var utils = require('utils');
 var roomLayout = require('room.layout');
 
@@ -10,12 +10,13 @@ var roleExplorer =
     {
         mapM.memorize(creep.room);
         
-        if(!("targetRoom" in creep.memory) || creep.room.name == creep.memory.targetRoom)
+        if(creep.memory.targetRoom === undefined || creep.room.name == creep.memory.targetRoom)
         {
             creep.memory.targetRoom = mapM.getStaleRoom();
         }
 
         utils.navToRoom(creep, creep.memory.targetRoom);
+        //creep.say("💔");
         //creep.say(expansion.getBestExpansionRoom());
         try
         {

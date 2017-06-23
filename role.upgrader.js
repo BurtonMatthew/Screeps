@@ -22,6 +22,11 @@ var roleUpgrader = {
                 creep.moveTo(creep.room.controller);
             }
             
+            if(creep.memory.linkId !== undefined)
+            {
+                Game.getObjectById(creep.memory.linkId)
+            }
+            
             if(creep.room.storage !== undefined)
             {
                 creep.withdraw(creep.room.storage, RESOURCE_ENERGY);

@@ -1,6 +1,6 @@
 function memorize(room)
 {
-    if(Memory.mapInfo !== undefined)
+    if(Memory.mapInfo === undefined)
     {
         var mapInfo = {};
         mapInfo.unexploredRooms = [];

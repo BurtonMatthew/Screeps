@@ -1,6 +1,6 @@
 var roomLayout = require('room.layout');
 var strategyHarvest = require('strategy.harvest');
-var strategyExpansion = require('stategy.expansion');
+var strategyExpansion = require('strategy.expansion');
 
 function getBodyPartsUpgrader(room)
 {
@@ -101,9 +101,12 @@ var roomExpansion = {
             
             try
             {
-                //roomLayout.visualize(room.memory.layout);
-                //room.memory.layout = roomLayout.createLayout(room);
-                //roomLayout.visualize(roomLayout.createLayout(room));
+                if(room.name == "W1N3")
+                {
+                    //roomLayout.visualize(roomLayout.createLayout(room));
+                    //roomLayout.visualize(room.memory.layout);
+                    //room.memory.layout = roomLayout.createLayout(room);
+                }
             }
             catch(err) { console.log(err); }
         }

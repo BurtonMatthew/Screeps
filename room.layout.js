@@ -69,16 +69,6 @@ function createLayout(room)
     layout.storage = storPos;
     usedPositions.push(storPos);
     
-    // Containers
-    const sources = room.find(FIND_SOURCES);
-    layout.containers = [];
-    for(var i=0, len=sources.length; i<len; ++i)
-    {
-        const newPos = findEmptyAdjNearController(room, sources[i].pos.x, sources[i].pos.y, usedPositions);
-        usedPositions.push(newPos)
-        layout.containers.push(newPos);
-    }
-    
     // Mines
     layout.mines = [];
     const minerals = room.find(FIND_MINERALS);
@@ -87,6 +77,26 @@ function createLayout(room)
         layout.mines.push(minerals[i].pos);
         usedPositions.push(minerals[i].pos)
     }
+    
+    // Containers
+    const sources = room.find(FIND_SOURCES);
+    var sourceContainers = [];
+    for(var i=0, len=sources.length; i<len; ++i)
+    {
+        const newPos = findEmptyAdjNearController(room, sources[i].pos.x, sources[i].pos.y, usedPositions);
+        usedPositions.push(newPos)
+        sourceContainers.push(newPos);
+    }
+    
+    var mineContainers = [];
+    for(var i=0, len=layout.mines.length; i<len; ++i)
+    {
+        const newPos = findEmptyAdjNearController(room, layout.mines[i].x, layout.mines[i].y, usedPositions);
+        usedPositions.push(newPos)
+        mineContainers.push(newPos);
+    }
+    
+    layout.containers = sourceContainers.concat(mineContainers);
     
     // Roads - build a destination list
     var destinations = [];
@@ -155,9 +165,9 @@ function createLayout(room)
     usedPositions.concat(layout.walls);
     
     // SourceLinks
-    for(var i=0, len=layout.containers.length; i<len; ++i)
+    for(var i=0, len=sourceContainers.length; i<len; ++i)
     {
-        var newPos = findEmptyAdjFarController(room, layout.containers[i].x, layout.containers[i].y, usedPositions);
+        var newPos = findEmptyAdjFarController(room, sourceContainers[i].x, sourceContainers[i].y, usedPositions);
         usedPositions.push(newPos)
         layout.links.push(newPos);
     }
