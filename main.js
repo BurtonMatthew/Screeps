@@ -5,7 +5,6 @@ var roleFighter = require('role.fighter');
 var roleMaintenance = require('role.maintenance');
 var roleExplorer = require('role.explorer');
 var roleStaticHarvester = require('role.staticHarvester');
-var roleLinkUpgrader = require('role.linkUpgrader');
 var roleExpander = require('role.expander');
 var roleTruck = require('role.truck');
 var roleHarasser = require('role.harasser');
@@ -65,10 +64,6 @@ module.exports.loop = function ()
         else if(creep.memory.role == "staticharvester")
         {
             roleStaticHarvester.run(creep);
-        }
-        else if(creep.memory.role == "linkupgrader")
-        {
-            roleLinkUpgrader.run(creep);
         }
         else if(creep.memory.role == "expander")
         {
