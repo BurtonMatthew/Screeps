@@ -63,8 +63,50 @@ function createLayout(room)
     var usedPositions = [];
     //room.lookAtArea(0, 0, 49, 49);
     
+    // Cant build next to exits
+    var exitPts = [];
+    var exitAdj = [];
+    var exitAdjAdj = [];
+    const exits = Game.map.describeExits(room.name);
+    for(exit in exits)
+    {
+        const exitPoints = room.find(parseInt(exit));
+        var emptAdj = [];
+        for(var i=0, len = exitPoints.length; i<len; ++i)
+        {
+            emptAdj = emptAdj.concat(findAllEmptyAdj(room, exitPoints[i].x, exitPoints[i].y, usedPositions));
+        }
+        var emptAdjAdj = [];
+        for(var i=0, len = emptAdj.length; i<len; ++i)
+        {
+            emptAdjAdj = emptAdjAdj.concat(findAllEmptyAdj(room, emptAdj[i].x, emptAdj[i].y, usedPositions));
+        }
+        exitPts = exitPts.concat(exitPoints);
+        exitAdj = exitAdj.concat(emptAdj);
+        exitAdjAdj = exitAdjAdj.concat(emptAdjAdj);
+    }
+    exitAdj = uniqueArray(exitAdj);
+    exitAdjAdj = uniqueArray(exitAdjAdj);
+    
+    var costMatrix = new PathFinder.CostMatrix;
+    for(var i=0; i<50; ++i)
+    {
+        for(var j=0; j<50; ++j)
+        {
+            if(room.lookForAt(LOOK_TERRAIN, i, j) == "wall")
+                costMatrix.set(i,j,255);
+            else
+                costMatrix.set(i,j,1);
+        }
+    }
+    
+    for(var i=0, len=exitAdjAdj.length; i<len; ++i)
+    {
+        costMatrix.set(exitAdjAdj[i].x, exitAdjAdj[i].y, 50);
+    }
+    
     // Storage
-    const conAdj = findEmptyAdj(room, room.controller.pos.x, room.controller.pos.y, usedPositions);
+    const conAdj = findEmptyAdj(room, room.controller.pos.x, room.controller.pos.y, usedPositions.concat(exitAdjAdj));
     const storPos = findEmptyAdjMaxSpace(room, conAdj.x, conAdj.y, usedPositions);
     layout.storage = storPos;
     usedPositions.push(storPos);
@@ -83,7 +125,7 @@ function createLayout(room)
     var sourceContainers = [];
     for(var i=0, len=sources.length; i<len; ++i)
     {
-        const newPos = findEmptyAdjNearController(room, sources[i].pos.x, sources[i].pos.y, usedPositions);
+        const newPos = findEmptyAdjNearController(room, sources[i].pos.x, sources[i].pos.y, usedPositions.concat(exitAdjAdj));
         usedPositions.push(newPos)
         sourceContainers.push(newPos);
     }
@@ -91,17 +133,15 @@ function createLayout(room)
     var mineContainers = [];
     for(var i=0, len=layout.mines.length; i<len; ++i)
     {
-        const newPos = findEmptyAdjNearController(room, layout.mines[i].x, layout.mines[i].y, usedPositions);
+        const newPos = findEmptyAdjNearController(room, layout.mines[i].x, layout.mines[i].y, usedPositions.concat(exitAdjAdj));
         usedPositions.push(newPos)
         mineContainers.push(newPos);
     }
-    
     layout.containers = sourceContainers.concat(mineContainers);
     
     // Roads - build a destination list
     var destinations = [];
     // To exits
-    const exits = Game.map.describeExits(room.name);
     for(exit in exits)
     {
         destinations.push(layout.storage.findClosestByPath(parseInt(exit)));
@@ -114,7 +154,7 @@ function createLayout(room)
     var roadTiles = [];
     for(var i=0, len=destinations.length; i<len; ++i)
     {
-        const path = layout.storage.findPathTo(destinations[i], {ignoreCreeps: 1/*, avoid: usedPositions*/});
+        const path = layout.storage.findPathTo(destinations[i], {ignoreCreeps: 1, costCallback: (string, matrix) => costMatrix});
         for(var j=0, pathLen=path.length; j<pathLen; ++j)
         {
             const roadPos = new RoomPosition(path[j].x, path[j].y, room.name);
@@ -129,6 +169,15 @@ function createLayout(room)
         usedPositions.push(roadTiles[i]);
     }
     
+    // Walls
+    layout.walls = exitAdjAdj;
+    layout.walls = _.filter(exitAdjAdj, function(n) { return !_.any(exitPts, n);});
+    layout.walls = _.filter(exitAdjAdj, function(n) { return !_.any(exitAdj, n);});
+    layout.ramparts = _.filter(layout.walls, function(n) { return _.any(usedPositions, n);});
+    layout.walls = _.filter(layout.walls, function(n) { return !_.any(usedPositions, n);});
+    
+    usedPositions = usedPositions.concat(exitAdjAdj);
+    
     // Storage Link
     layout.links = [];
     const storLink = findEmptyAdjFarController(room, layout.storage.x, layout.storage.y, usedPositions);
@@ -139,30 +188,6 @@ function createLayout(room)
     const spawn = findEmptyAdjFarController(room, layout.links[0].x, layout.links[0].y, usedPositions);
     layout.spawns.push(spawn);
     usedPositions.push(spawn);
-    
-    // Walls
-    layout.walls = [];
-    for(exit in exits)
-    {
-        const exitPoints = room.find(parseInt(exit));
-        var emptAdj = [];
-        for(var i=0, len = exitPoints.length; i<len; ++i)
-        {
-            emptAdj = emptAdj.concat(findAllEmptyAdj(room, exitPoints[i].x, exitPoints[i].y, usedPositions));
-        }
-        var emptAdjAdj = [];
-        for(var i=0, len = emptAdj.length; i<len; ++i)
-        {
-            emptAdjAdj = emptAdjAdj.concat(findAllEmptyAdj(room, emptAdj[i].x, emptAdj[i].y, usedPositions));
-        }
-        emptAdjAdj = _.filter(emptAdjAdj, function(n) { return !_.any(exitPoints, n);});
-        emptAdjAdj = _.filter(emptAdjAdj, function(n) { return !_.any(emptAdj, n);});
-        layout.walls = layout.walls.concat(emptAdjAdj);
-    }
-    layout.walls = _.uniq(layout.walls);
-    layout.ramparts = _.filter(layout.walls, function(n) { return _.any(usedPositions, n);});
-    layout.walls = _.filter(layout.walls, function(n) { return !_.any(usedPositions, n);});
-    usedPositions.concat(layout.walls);
     
     // SourceLinks
     for(var i=0, len=sourceContainers.length; i<len; ++i)
@@ -179,7 +204,7 @@ function createLayout(room)
     while(acceptedSites.length < 66 && i<sitesToExamine.length)
     {
         const ePos = sitesToExamine[i];
-        if(room.lookForAt(LOOK_TERRAIN, ePos) != "wall")
+        if(room.lookForAt(LOOK_TERRAIN, ePos) != "wall" && !_.any(exitAdjAdj, ePos))
         {
             // Add diag to examinable sites
             const upleft = new RoomPosition(ePos.x-1, ePos.y-1, ePos.roomName);
@@ -239,7 +264,7 @@ function createLayout(room)
     layout.extensions = acceptedSites.slice(0,60);
     layout.towers = acceptedSites.slice(60,66);
     
-    layout.roads = _.uniq(layout.roads);
+    layout.roads = uniqueArray(layout.roads);
     
     
     return layout;
@@ -338,6 +363,16 @@ function findEmptyAdjMaxSpace(room, x, y, used)
     return bestTile;
 }
 
+function uniqueArray(arr)
+{
+    var ret = [];
+    for(var i=0, len=arr.length; i<len; ++i)
+    {
+        if(!_.any(ret, arr[i]))
+            ret.push(arr[i]);
+    }
+    return ret;
+}
 module.exports = {
     visualize,
     createLayout,

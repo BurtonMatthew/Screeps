@@ -46,17 +46,17 @@ var roomBase = {
         {
             Game.spawns['Main'].createCreep( [MOVE], 'Explorer' + Math.floor(Math.random() * 1000000), { role: 'explorer' });
         }
-        else if(conSites.length > 0 && builders.length < 3)
+        else if(false && conSites.length > 0 && builders.length < 3)
         {
             Game.spawns['Main'].createCreep( [WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE], 'Builder' + Math.floor(Math.random() * 1000000), { role: 'builder', home: "W3N4" });
         }
         else if(repairSites.length > 0 && maintenances.length < 2)
         {
-            Game.spawns['Main'].createCreep( [WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], 'Maintenance' + Math.floor(Math.random() * 1000000), { role: 'maintenance', full: false, home: "W3N4" });
+            Game.spawns['Main'].createCreep( [WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE], 'Maintenance' + Math.floor(Math.random() * 1000000), { role: 'maintenance', full: false, home: "W3N4" });
         }
         else if(upgraders.length < 1)
         {
-            Game.spawns['Main'].createCreep( [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE], 'Upgrader' + Math.floor(Math.random() * 1000000), { role: 'upgrader', full: true, home: "W3N4", linkId: "bc5c202cb431753" });
+            Game.spawns['Main'].createCreep( [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE], 'Upgrader' + Math.floor(Math.random() * 1000000), { role: 'upgrader', full: true, home: "W3N4", linkId: "bc5c202cb431753" });
         }
         //else if(linkupgraders.length < 2)
         //{

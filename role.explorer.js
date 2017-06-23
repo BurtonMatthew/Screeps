@@ -10,6 +10,7 @@ var roleExplorer =
     {
         mapM.memorize(creep.room);
         
+        //creep.memory.targetRoom = "W5N3";
         if(creep.memory.targetRoom === undefined || creep.room.name == creep.memory.targetRoom)
         {
             creep.memory.targetRoom = mapM.getStaleRoom();
@@ -17,7 +18,7 @@ var roleExplorer =
 
         utils.navToRoom(creep, creep.memory.targetRoom);
         //creep.say("💔");
-        //creep.say(expansion.getBestExpansionRoom());
+        //console.log(expansion.getBestExpansionRoom());
         try
         {
             //roomLayout.visualize(roomLayout.createLayout(creep.room));

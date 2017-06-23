@@ -83,8 +83,6 @@ function getBodyPartsHarvester(source, hasLink, isMineral)
 {
     const maxAffordableWorkParts = Math.floor((source.room.energyCapacityAvailable - (hasLink ? 100 : 50)) / 100);
     const maxWorkParts = isMineral ?  10 : (Math.ceil(source.energyCapacity / 600)); // /600 derived from 300 regen ticks, 2 per part per tick
-    console.log(source.mineralAmount);
-    console.log(source.ticksToRegeneration);
     var parts = [MOVE];
     if(hasLink)
         parts.push(CARRY);
