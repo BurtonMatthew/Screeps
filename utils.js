@@ -68,7 +68,7 @@ var utils =
     
     getClosestSpawner: function(pos)
     {
-        const closest = pos.findClosestByPath(FIND_MY_STRUCTURES, {ignoreCreeps: 1, filter: (struct) => struct.structureType == STRUCTURE_SPAWN});
+        const closest = pos.findClosestByRange(FIND_MY_STRUCTURES, {ignoreCreeps: 1, filter: (struct) => struct.structureType == STRUCTURE_SPAWN});
         if(closest)
             return closest;
         else

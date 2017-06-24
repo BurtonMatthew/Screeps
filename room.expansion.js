@@ -33,6 +33,7 @@ var roomExpansion = {
         const sources = room.find(FIND_SOURCES);
         const conSites = room.find(FIND_CONSTRUCTION_SITES);
         const minerals = room.find(FIND_MINERALS);
+        const spawners = room.find(FIND_MY_STRUCTURES, {filter: (struct) => struct.structureType == STRUCTURE_SPAWN });
         
         if(creeps.length < 4 && harvesters.length < 3)
             utils.getAvailableSpawner(room).createCreep( [WORK, CARRY, MOVE], 'Harvester' + Math.floor(Math.random() * 1000000), { role: 'harvester', full: false, home: room.name });
@@ -83,15 +84,21 @@ var roomExpansion = {
         if(room.memory.linkReqEnergy !== undefined)
         {
             const reqLink = Game.getObjectById(room.memory.linkReqEnergy);
-            const reqEnergy = reqLink.energyCapacity - reqLink.energy;
-            const links = room.find(FIND_MY_STRUCTURES, {filter: (structure) => { return structure.structureType == STRUCTURE_LINK; }});
-            for(var i=0, len=links.length; i<len; ++i)
+            if(reqLink.energy > 500)
             {
-                if(links[i].id != room.memory.linkReqEnergy && links[i].cooldown == 0 && links[i].energy >= reqEnergy)
+                delete room.memory.linkReqEnergy;
+            }
+            else
+            {
+                const reqEnergy = reqLink.energyCapacity - reqLink.energy;
+                const links = room.find(FIND_MY_STRUCTURES, {filter: (structure) => { return structure.structureType == STRUCTURE_LINK; }});
+                for(var i=0, len=links.length; i<len; ++i)
                 {
-                    links[i].transferEnergy(reqLink, reqEnergy);
-                    room.memory.linkReqEnergy = undefined;
-                    break;
+                    if(links[i].id != room.memory.linkReqEnergy && links[i].cooldown == 0 /*&& links[i].energy >= reqEnergy*/ && links[i].energy == 800 && reqLink.energy == 0)
+                    {
+                        links[i].transferEnergy(reqLink/*, reqEnergy*/);
+                        break;
+                    }
                 }
             }
         }

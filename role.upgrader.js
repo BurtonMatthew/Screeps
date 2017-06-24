@@ -21,7 +21,7 @@ var roleUpgrader = {
                 if(creep.withdraw(link, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE)
                     creep.moveTo(link);
                     
-                if(link.energy <= 200 /*&& creep.room.memory.linkReqEnergy === undefined*/)
+                if(link.energy <= 200 && creep.room.memory.linkReqEnergy === undefined)
                     creep.room.memory.linkReqEnergy = link.id;
             }
             

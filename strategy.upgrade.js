@@ -6,16 +6,22 @@ function spawn(controller)
         
     if(controller.room.storage !== undefined && controller.pos.inRangeTo(controller.room.storage, 3))
     {
-        utils.getClosestSpawner(controller.pos).createCreep(getBodyPartsUpgraderStatic(controller.room), "Upgrader" + controller.room.name
-            , { role: 'upgrader', full: false, home: controller.room.name });
-        return true;
+        if(Game.creeps["Upgrader" + controller.room.name] === undefined)
+        {
+            utils.getClosestSpawner(controller.pos).createCreep(getBodyPartsUpgraderStatic(controller.room), "Upgrader" + controller.room.name
+                , { role: 'upgrader', full: false, home: controller.room.name });
+            return true;
+        }
     }
     else if(controller.level >= 6) // Super hacky way to see if we're a link based controller, only applies to starting room
     {
-        const link = controller.pos.findClosestByRange(FIND_MY_STRUCTURES, {filter: (struct) => struct.structureType == STRUCTURE_LINK});
-        utils.getClosestSpawner(controller.pos).createCreep(getBodyPartsUpgraderStatic(controller.room), "Upgrader" + controller.room.name
-            , { role: 'upgrader', full: false, home: controller.room.name, linkId: link.id});
-        return true;
+        if(Game.creeps["Upgrader" + controller.room.name] === undefined)
+        {
+            const link = controller.pos.findClosestByRange(FIND_MY_STRUCTURES, {filter: (struct) => struct.structureType == STRUCTURE_LINK});
+            utils.getClosestSpawner(controller.pos).createCreep(getBodyPartsUpgraderStatic(controller.room), "Upgrader" + controller.room.name
+                , { role: 'upgrader', full: true, home: controller.room.name, linkId: link.id});
+            return true;
+        }
     }
     // No good tech, upgrader swarm!
     else
@@ -34,7 +40,7 @@ function getBodyPartsUpgraderStatic(room)
     
     for(var i=0; i<workParts; ++i)
         parts.push(WORK);
-        
+                
     return parts;
 }
 

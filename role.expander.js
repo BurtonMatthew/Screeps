@@ -23,13 +23,13 @@ var roleExpander =
                 creep.room.memory.layout = roomLayout.createLayout(creep.room);
             }
         }
-        else if(creep.room.memory === undefined)
+        else if(creep.room.memory.layout === undefined)
         {
             creep.room.memory.layout = roomLayout.createLayout(creep.room);
         }
         else
         {
-            //roomLayout.visualize(creep.room.memory.layout);
+            creep.suicide();
         }
     }
 };
