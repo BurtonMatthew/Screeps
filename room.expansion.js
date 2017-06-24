@@ -1,3 +1,4 @@
+var utils = require('utils');
 var roomLayout = require('room.layout');
 var strategyHarvest = require('strategy.harvest');
 var strategyExpansion = require('strategy.expansion');
@@ -56,45 +57,30 @@ var roomExpansion = {
         const conSites = room.find(FIND_CONSTRUCTION_SITES);
         const minerals = room.find(FIND_MINERALS);
         
-        for(var i=0; i<spawners.length; ++i)
-        {
             var anySpawn = false;
             for(var j=0, len=sources.length; j<len && !anySpawn; ++j)
             {
-                anySpawn |= strategyHarvest.spawn(spawners[i], sources[j]);
+                anySpawn |= strategyHarvest.spawn(sources[j]);
             }
             
             for(var j=0, len=minerals.length; j<len && !anySpawn; ++j)
             {
                 const extractor = room.lookForAt(LOOK_STRUCTURES, minerals[j]);
                 if(extractor.length > 0)
-                    anySpawn |= strategyHarvest.spawn(spawners[i], minerals[j]);
+                    anySpawn |= strategyHarvest.spawn(minerals[j]);
             }
             
             
-            if(creeps.length < 4 && harvesters.length < 3)
-                spawners[i].createCreep( [WORK, CARRY, MOVE], 'Harvester' + Math.floor(Math.random() * 1000000), { role: 'harvester', full: false, home: room.name });
-            else if(anySpawn) { }
-            else if(builders.length < 3 && conSites.length > 0)
-                spawners[i].createCreep( getBodyPartsBuilder(room), 'Builder' + Math.floor(Math.random() * 1000000), { role: 'builder', full: false, home: room.name });
-            else if(maintenances.length < 2)
-                spawners[i].createCreep( getBodyPartsBuilder(room), 'Maintenance' + Math.floor(Math.random() * 1000000), { role: 'maintenance', full: false, home: room.name });
-            else if(upgraders.length < 1 + (room.storage === undefined ? 4 : 0))
-                spawners[i].createCreep( getBodyPartsUpgrader(room), 'Upgrader' + Math.floor(Math.random() * 1000000), { role: 'upgrader', full: false, home: room.name });
-            else if(strategyExpansion.spawn(spawners[i])) {}
-            //else if(refillers.length < 4)
-            //    spawners[i].createCreep( [MOVE,MOVE,CARRY,CARRY], "Refiller" + Math.floor(Math.random() * 1000000), { role: 'refiller' });
-            //else
-            //    spawners[i].createCreep( [TOUGH, TOUGH, TOUGH, TOUGH, MOVE, MOVE, MOVE, MOVE, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH,MOVE, ATTACK, ATTACK, ATTACK, TOUGH, TOUGH, TOUGH, TOUGH, ATTACK, ATTACK, ATTACK, ATTACK], 'Fighter' + Math.floor(Math.random() * 1000000), { role: 'fighter' });
-
-            //else
-            //{
-            //    spawners[i].createCreep( [MOVE], "Harass" + Math.floor(Math.random() * 1000000), { role: 'harasser' });
-            //}
-            
-        }
-        
-        
+        if(creeps.length < 4 && harvesters.length < 3)
+            utils.getAvailableSpawner(room).createCreep( [WORK, CARRY, MOVE], 'Harvester' + Math.floor(Math.random() * 1000000), { role: 'harvester', full: false, home: room.name });
+        else if(anySpawn) { }
+        else if(builders.length < 3 && conSites.length > 0)
+            utils.getAvailableSpawner(room).createCreep( getBodyPartsBuilder(room), 'Builder' + Math.floor(Math.random() * 1000000), { role: 'builder', full: false, home: room.name });
+        else if(maintenances.length < 2)
+            utils.getAvailableSpawner(room).createCreep( getBodyPartsBuilder(room), 'Maintenance' + Math.floor(Math.random() * 1000000), { role: 'maintenance', full: false, home: room.name });
+        else if(upgraders.length < 1 + (room.storage === undefined ? 4 : 0))
+            utils.getAvailableSpawner(room).createCreep( getBodyPartsUpgrader(room), 'Upgrader' + Math.floor(Math.random() * 1000000), { role: 'upgrader', full: false, home: room.name });
+        else if(strategyExpansion.spawn(spawners[0])) {}
             
         if("layout" in room.memory)
         {

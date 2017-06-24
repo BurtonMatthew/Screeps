@@ -1,3 +1,4 @@
+var utils = require('utils');
 var strategyExpansion = require('strategy.expansion');
 var strategyHarvest = require('strategy.harvest');
 
@@ -22,14 +23,14 @@ var roomBase = {
         var anySpawn = false;
         for(var j=0, len=sources.length; j<len && !anySpawn; ++j)
         {
-            anySpawn |= strategyHarvest.spawn(Game.spawns['Main'], sources[j]);
+            anySpawn |= strategyHarvest.spawn(sources[j]);
         }
         
         for(var j=0, len=minerals.length; j<len && !anySpawn; ++j)
         {
             const extractor = room.lookForAt(LOOK_STRUCTURES, minerals[j]);
             if(extractor.length > 0)
-                anySpawn |= strategyHarvest.spawn(Game.spawns['Main'], minerals[j]);
+                anySpawn |= strategyHarvest.spawn(minerals[j]);
         }
         
         //if(hostiles.length > 0)
@@ -39,24 +40,24 @@ var roomBase = {
         //}
         if(creeps.length < 4) // Emergency no harvester case
         {
-            Game.spawns['Main'].createCreep( [WORK, CARRY, MOVE], 'Harvester' + Math.floor(Math.random() * 1000000), { role: 'harvester', full: false });
+            utils.getAvailableSpawner(room).createCreep( [WORK, CARRY, MOVE], 'Harvester' + Math.floor(Math.random() * 1000000), { role: 'harvester', full: false });
         }
         else if(anySpawn) {}
         else if(explorers.length < 1)
         {
-            Game.spawns['Main'].createCreep( [MOVE], 'Explorer' + Math.floor(Math.random() * 1000000), { role: 'explorer' });
+            utils.getAvailableSpawner(room).createCreep( [MOVE], 'Explorer' + Math.floor(Math.random() * 1000000), { role: 'explorer' });
         }
         else if(false && conSites.length > 0 && builders.length < 3)
         {
-            Game.spawns['Main'].createCreep( [WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE], 'Builder' + Math.floor(Math.random() * 1000000), { role: 'builder', home: "W3N4" });
+            utils.getAvailableSpawner(room).createCreep( [WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE], 'Builder' + Math.floor(Math.random() * 1000000), { role: 'builder', home: "W3N4" });
         }
         else if(repairSites.length > 0 && maintenances.length < 2)
         {
-            Game.spawns['Main'].createCreep( [WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE], 'Maintenance' + Math.floor(Math.random() * 1000000), { role: 'maintenance', full: false, home: "W3N4" });
+            utils.getAvailableSpawner(room).createCreep( [WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE], 'Maintenance' + Math.floor(Math.random() * 1000000), { role: 'maintenance', full: false, home: "W3N4" });
         }
         else if(upgraders.length < 1)
         {
-            Game.spawns['Main'].createCreep( [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE], 'Upgrader' + Math.floor(Math.random() * 1000000), { role: 'upgrader', full: true, home: "W3N4", linkId: "bc5c202cb431753" });
+            utils.getAvailableSpawner(room).createCreep( [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE], 'Upgrader' + Math.floor(Math.random() * 1000000), { role: 'upgrader', full: true, home: "W3N4", linkId: "bc5c202cb431753" });
         }
         //else if(linkupgraders.length < 2)
         //{

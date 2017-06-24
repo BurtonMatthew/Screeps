@@ -64,6 +64,24 @@ var utils =
         }
         
         return creep.carry.energy == creep.carryCapacity;
+    },
+    
+    getClosestSpawner: function(pos)
+    {
+        const closest = pos.findClosestByPath(FIND_MY_STRUCTURES, {ignoreCreeps: 1, filter: (struct) => struct.structureType == STRUCTURE_SPAWN});
+        if(closest)
+            return closest;
+        else
+            return { createCreep: function(body,name,mem) { } }; //No avail spawner, but return spawn function so we can avoid null checks
+    },
+    
+    getAvailableSpawner: function(room)
+    {
+        const availSpawners = room.find(FIND_MY_STRUCTURES, {filter: (struct) => struct.structureType == STRUCTURE_SPAWN && struct.spawning === null} );
+        if(availSpawners.length > 0)
+            return availSpawners[0];
+        else
+            return { createCreep: function(body,name,mem) { } }; //No avail spawner, but return spawn function so we can avoid null checks
     }
 };
 

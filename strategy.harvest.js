@@ -1,4 +1,6 @@
-function spawn(spawner, source)
+var utils = require('utils');
+
+function spawn(source)
 {
     const isMineral = "mineralAmount" in source
     if(isMineral && source.mineralAmount == 0)
@@ -36,7 +38,7 @@ function spawn(spawner, source)
             creepMem.standX = container.pos.x;
             creepMem.standY = container.pos.y;
         }
-        spawner.createCreep(getBodyPartsHarvester(source, hasLink, isMineral), "Harvest" + (harvestCreep == harvestCreepB ? "A" : "B") + source.id, creepMem);
+        utils.getClosestSpawner(source.pos).createCreep(getBodyPartsHarvester(source, hasLink, isMineral), "Harvest" + (harvestCreep == harvestCreepB ? "A" : "B") + source.id, creepMem);
         return true;
     }
     else if(harvestCreep.getActiveBodyparts(CARRY) == 0) // Drop miner
@@ -52,7 +54,7 @@ function spawn(spawner, source)
                 const container = source.pos.findClosestByRange(FIND_STRUCTURES, {filter: (struct) => struct.structureType == STRUCTURE_CONTAINER });
                 if(container)
                 {
-                    spawner.createCreep(getBodyPartsHauler(source, isMineral), "Hauler" + source.id + i, 
+                    utils.getClosestSpawner(source.pos).createCreep(getBodyPartsHauler(source, isMineral), "Hauler" + source.id + i, 
                         { role: 'hauler', full: false, containerId: container.id, resourceType: (isMineral ? source.mineralType : RESOURCE_ENERGY) });
                     return true;
                 }
@@ -65,14 +67,14 @@ function spawn(spawner, source)
         if(storageLinkCreep === undefined)
         {
             const link = source.room.storage.pos.findClosestByRange(FIND_STRUCTURES, {filter: (struct) => struct.structureType == STRUCTURE_LINK });
-            spawner.createCreep([MOVE, CARRY, CARRY], "StorageLink" + source.room.name, { role: 'storagelink', linkId: link.id });
+            utils.getClosestSpawner(link.pos).createCreep([MOVE, CARRY, CARRY], "StorageLink" + source.room.name, { role: 'storagelink', linkId: link.id });
             return true;
         }
         
         const refillerCreep = Game.creeps["Refiller" + source.room.name];
         if(refillerCreep === undefined)
         {
-            spawner.createCreep([MOVE, MOVE, CARRY, CARRY], "Refiller" + source.room.name, { role: 'refiller', home: source.room.name });
+            utils.getAvailableSpawner(source.room).createCreep([MOVE, MOVE, CARRY, CARRY], "Refiller" + source.room.name, { role: 'refiller', home: source.room.name });
             return true;
         }
     }

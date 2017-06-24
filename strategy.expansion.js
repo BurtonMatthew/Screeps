@@ -5,41 +5,50 @@ function spawn(spawner)
     const myControllers = _.filter(Game.structures, (struct) => struct.structureType == STRUCTURE_CONTROLLER);
     if(Game.gcl.level > myControllers.length && _.filter(Game.creeps, (creep) => creep.name == "Expander").length < 1 )
     {
-        spawner.createCreep( [CLAIM, MOVE, MOVE, MOVE, MOVE], 'Expander', { role: 'expander', home: getBestExpansionRoom() });
-        return true;
+        const expansionRoom = getBestExpansionRoom();
+        const route = Game.map.findRoute(spawner.room, expansionRoom);
+        if(route.length > 0 && route.length < 9)
+        {
+            spawner.createCreep( [CLAIM, MOVE, MOVE, MOVE, MOVE], 'Expander', { role: 'expander', home: expansionRoom });
+            return true; 
+        }
     }
     
     for(var i=0, len=myControllers.length; i<len; ++i)
     {
         if(myControllers[i].room.find(FIND_MY_STRUCTURES, {filter: (struct) => struct.structureType == STRUCTURE_SPAWN}).length == 0)
         {
-            if(_.filter(Game.creeps, (creep) => creep.name == ("ExpUpgrader" + myControllers[i].room.name)).length < 1)
+            const route = Game.map.findRoute(spawner.room, myControllers[i].room.name);
+            if(route.length > 0 && route.length < 9)
             {
-                spawner.createCreep( [WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE], ("ExpUpgrader" + myControllers[i].room.name), { role: 'upgrader', full: false, home: myControllers[i].room.name });
-                return true;
-            }
-            
-            if(_.filter(Game.creeps, (creep) => creep.name == ("ExpMaintainer" + myControllers[i].room.name)).length < 1)
-            {
-                spawner.createCreep( [WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE], ("ExpMaintainer" + myControllers[i].room.name), { role: 'maintenance', full: false, home: myControllers[i].room.name });
-                return true;
-            }
-            
-            for(var j=0; j<8; ++j)
-            {
-                if(_.filter(Game.creeps, (creep) => creep.name == ("ExpBuilder" + myControllers[i].room.name + j)).length < 1)
+                if(_.filter(Game.creeps, (creep) => creep.name == ("ExpUpgrader" + myControllers[i].room.name)).length < 1)
                 {
-                    spawner.createCreep( [WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE], ("ExpBuilder" + myControllers[i].room.name + j), { role: 'builder', full: false, home: myControllers[i].room.name });
+                    spawner.createCreep( [WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE], ("ExpUpgrader" + myControllers[i].room.name), { role: 'upgrader', full: false, home: myControllers[i].room.name });
                     return true;
                 }
-            }
-            
-            for(var j=0; j<80; ++j)
-            {
-                if(_.filter(Game.creeps, (creep) => creep.name == ("ExpTruck" + myControllers[i].room.name + j)).length < 1)
+                
+                if(_.filter(Game.creeps, (creep) => creep.name == ("ExpMaintainer" + myControllers[i].room.name)).length < 1)
                 {
-                    spawner.createCreep( [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE], ("ExpTruck" + myControllers[i].room.name + j), { role: 'truck', full: false, home: myControllers[i].room.name });
+                    spawner.createCreep( [WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE], ("ExpMaintainer" + myControllers[i].room.name), { role: 'maintenance', full: false, home: myControllers[i].room.name });
                     return true;
+                }
+                
+                for(var j=0; j<8; ++j)
+                {
+                    if(_.filter(Game.creeps, (creep) => creep.name == ("ExpBuilder" + myControllers[i].room.name + j)).length < 1)
+                    {
+                        spawner.createCreep( [WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE], ("ExpBuilder" + myControllers[i].room.name + j), { role: 'builder', full: false, home: myControllers[i].room.name });
+                        return true;
+                    }
+                }
+                
+                for(var j=0; j<80; ++j)
+                {
+                    if(_.filter(Game.creeps, (creep) => creep.name == ("ExpTruck" + myControllers[i].room.name + j)).length < 1)
+                    {
+                        spawner.createCreep( [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE], ("ExpTruck" + myControllers[i].room.name + j), { role: 'truck', full: false, home: myControllers[i].room.name });
+                        return true;
+                    }
                 }
             }
         }
