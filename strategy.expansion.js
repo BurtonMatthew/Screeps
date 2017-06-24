@@ -75,11 +75,11 @@ function getBestExpansionRoom()
         if(!room.hasController || "owner" in room.controller)
             continue;
         
-        var totalScore = (sourceScore(room)             * 0.55)
+        var totalScore = (sourceScore(room)             * 0.45)
                         +(distanceScore(roomName)       * 0.15)
                         +(compactScore(room)            * 0.05)
                         +(mineralScore(myMinerals, room)* 0.20)
-                        +(hostileExitsScore(roomName)   * 0.05);
+                        +(continguousScore(roomName)    * 0.15);
         
         if(totalScore > bestRoomWeight)
         {
@@ -98,16 +98,21 @@ function sourceScore(room)
 
 function distanceScore(roomName)
 {
-    const route = Game.map.findRoute("W3N4", roomName, {
+    const myRooms = _.filter(Game.rooms, room => room.controller && room.controller.my);
+    var bestRouteLength = Infinity;
+    for(var i=0, len=myRooms.length; i<len; ++i)
+    {
+        const route = Game.map.findRoute(myRooms.name, roomName, {
         routeCallback(roomName, fromRoomName) {
             if(mapM.isHostile(roomName)) { return Infinity; }
             return 1;
             }
         });
-    if(route != ERR_NO_PATH && route.length > 0)
-        return 1 / route.length;
-    else
-        return 0;
+        if(route != ERR_NO_PATH && route.length > 0 && route.length < bestRouteLength)
+            bestRouteLength = route.length
+    }
+    
+    return 1 / bestRouteLength;
 }
 
 function compactScore(room)
@@ -161,21 +166,20 @@ function mineralScore(myMinerals, room)
     return score;
 }
 
-function hostileExitsScore(roomName)
+function continguousScore(roomName)
 {
+    const myRooms = _(Game.rooms).filter(room => room.controller && room.controller.my)
+                                 .map(room => room.name);
     var score = 1.0;
-    var exits = Game.map.describeExits(roomName);
-    for(exit in exits)
-    {
-        exitName = exits[exit];
-        if(    !(exitName in Memory.mapInfo)
-            || !Memory.mapInfo[exitName].hasController
-            || !Memory.mapInfo[exitName].controller.my)
-        {
-            score -= 0.25;    
-        }
-    }
-    
+    // add 0.25 for each adjacent connection we're making
+    score +=  _(myRooms).map(room => _.values(Game.map.describeExits(room)))
+                        .flatten()
+                        .filter(name => name == roomName)
+                        .value().length * 0.25;
+    // sub 0.25 for each new hostile connection
+    score -= _(Game.map.describeExits(roomName)).values()
+                        .filter(exit => !_.any(myRooms, exit))
+                        .value().length * 0.25
     return score;
 }
 

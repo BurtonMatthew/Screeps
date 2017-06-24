@@ -34,6 +34,7 @@ var roomExpansion = {
         const conSites = room.find(FIND_CONSTRUCTION_SITES);
         const minerals = room.find(FIND_MINERALS);
         const spawners = room.find(FIND_MY_STRUCTURES, {filter: (struct) => struct.structureType == STRUCTURE_SPAWN });
+        const explorers = _.filter(Game.creeps, (creep) => creep.memory.role == 'explorer');
         
         if(creeps.length < 4 && harvesters.length < 3)
             utils.getAvailableSpawner(room).createCreep( [WORK, CARRY, MOVE], 'Harvester' + Math.floor(Math.random() * 1000000), { role: 'harvester', full: false, home: room.name });
@@ -44,6 +45,8 @@ var roomExpansion = {
             utils.getAvailableSpawner(room).createCreep( getBodyPartsBuilder(room), 'Maintenance' + Math.floor(Math.random() * 1000000), { role: 'maintenance', full: false, home: room.name });
         else if(strategyUpgrade.spawn(room.controller)) {}
         else if(strategyExpansion.spawn(spawners[0])) {}
+        else if(explorers.length < 1)
+            utils.getAvailableSpawner(room).createCreep( [MOVE], 'Explorer' + Math.floor(Math.random() * 1000000), { role: 'explorer' });
             
         if("layout" in room.memory)
         {
