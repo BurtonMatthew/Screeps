@@ -11,7 +11,6 @@ var roleHarasser = require('role.harasser');
 var roleHauler = require('role.hauler');
 var roleRefiller = require('role.refiller');
 var roleStorageLink = require('role.storageLink');
-var roomBase = require('room.base');
 var roomExpansion = require('room.expansion');
 
 module.exports.loop = function () 
@@ -26,12 +25,7 @@ module.exports.loop = function ()
     for(var name in Game.rooms)
     {
         var room = Game.rooms[name];
-        if(room.name == "W3N4")
-            roomBase.run(room);
-        else
-        {
-            roomExpansion.run(room);
-        }
+        roomExpansion.run(room);
     }
     
     for(var i in Game.creeps) 

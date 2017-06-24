@@ -82,6 +82,29 @@ var utils =
             return availSpawners[0];
         else
             return { createCreep: function(body,name,mem) { } }; //No avail spawner, but return spawn function so we can avoid null checks
+    },
+    
+    spawnToCount: function(getSpawnerFunc, count, body, name, mem)
+    {
+        for(var i=0; i<count; ++i)
+        {
+            if(Game.creeps[name + i] === undefined)
+            {
+                getSpawnerFunc().createCreep(body, name+i, mem);
+                return true;
+            }
+        }
+        return false;
+    },
+    
+    spawnStrategyArray: function(stratFunc, arr)
+    {
+        for(var i=0, len=arr.length; i<len; ++i)
+        {
+            if(stratFunc(arr[i]))
+                return true;
+        }
+        return false;
     }
 };
 
