@@ -11,6 +11,7 @@ var roleFighter =
             if(creep.attack(targets[0]) == ERR_NOT_IN_RANGE) 
             {
                 creep.moveTo(targets[0]);
+                creep.heal(creep);
             }
         }
         else if(creep.room.name != creep.memory.home)

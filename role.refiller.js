@@ -25,6 +25,11 @@ var roleRefiller = {
                 {
                     creep.moveTo(target);
                 }
+                
+                if(creep.room.storage !== undefined && target != creep.room.storage)
+                {
+                    creep.withdraw(creep.room.storage, RESOURCE_ENERGY);
+                }
             }
             
             if(creep.carry.energy == 0)

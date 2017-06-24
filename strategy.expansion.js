@@ -16,9 +16,13 @@ function spawn(spawner)
     
     for(var i=0, len=myControllers.length; i<len; ++i)
     {
-        if(myControllers[i].room.find(FIND_MY_STRUCTURES, {filter: (struct) => struct.structureType == STRUCTURE_SPAWN}).length == 0)
+        if(myControllers[i].level < 3 || myControllers[i].room.find(FIND_MY_STRUCTURES, {filter: (struct) => struct.structureType == STRUCTURE_SPAWN}).length == 0)
         {
-            const route = Game.map.findRoute(spawner.room, myControllers[i].room.name);
+            const route = Game.map.findRoute(spawner.room, myControllers[i].room.name, {
+                routeCallback(roomName, fromRoomName) {
+                    if(mapM.isHostile(roomName)) { return Infinity; }
+                    return 1;
+                    }});
             if(route.length > 0 && route.length < 9)
             {
                 if(_.filter(Game.creeps, (creep) => creep.name == ("ExpUpgrader" + myControllers[i].room.name)).length < 1)

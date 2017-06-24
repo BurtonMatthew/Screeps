@@ -16,7 +16,13 @@ var roleBuilder = {
         {
             var targets = creep.room.find(FIND_MY_CONSTRUCTION_SITES);
             if(targets.length) {
-                var target = creep.pos.findClosestByRange(FIND_MY_CONSTRUCTION_SITES);
+                var target = creep.pos.findClosestByRange(FIND_MY_CONSTRUCTION_SITES, {filter: (struct) => struct.structureType == STRUCTURE_CONTAINER});
+                if(!target)
+                    target = creep.pos.findClosestByRange(FIND_MY_CONSTRUCTION_SITES, {filter: (struct) => struct.structureType == STRUCTURE_TOWER});
+                if(!target)
+                    target = creep.pos.findClosestByRange(FIND_MY_CONSTRUCTION_SITES, {filter: (struct) => struct.structureType == STRUCTURE_EXTENSION});
+                if(!target)
+                    target = creep.pos.findClosestByRange(FIND_MY_CONSTRUCTION_SITES);
                 if(creep.build(target) == ERR_NOT_IN_RANGE) {
                     creep.moveTo(target);
                 }

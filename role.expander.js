@@ -20,12 +20,12 @@ var roleExpander =
             
             if(creep.room.controller.my)
             {
-                creep.room.memory.layout = roomLayout.createLayout(creep.room);
+                creep.room.memory.layout = roomLayout.createBaseLayout(creep.room);
             }
         }
         else if(creep.room.memory.layout === undefined)
         {
-            creep.room.memory.layout = roomLayout.createLayout(creep.room);
+            creep.room.memory.layout = roomLayout.createBaseLayout(creep.room);
         }
         else
         {

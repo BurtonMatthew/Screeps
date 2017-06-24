@@ -12,6 +12,7 @@ var roleHauler = require('role.hauler');
 var roleRefiller = require('role.refiller');
 var roleStorageLink = require('role.storageLink');
 var roomExpansion = require('room.expansion');
+let strategyKeeperRoom = require('strategy.keeperRoom');
 
 module.exports.loop = function () 
 {
@@ -27,6 +28,12 @@ module.exports.loop = function ()
         var room = Game.rooms[name];
         if(room.controller !== undefined && room.controller.my)
             roomExpansion.run(room);
+    }
+    
+    for(var name in Game.flags)
+    {
+        if(Game.flags[name].name == "keeper")
+            strategyKeeperRoom.run(Game.rooms[Game.flags[name]]);
     }
     
     for(var i in Game.creeps) 

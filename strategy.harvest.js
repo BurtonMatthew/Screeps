@@ -3,7 +3,7 @@ var utils = require('utils');
 function spawn(source)
 {
     const isMineral = "mineralAmount" in source
-    if(isMineral && source.mineralAmount == 0)
+    if(isMineral && (source.mineralAmount == 0 || source.room.find(FIND_STRUCTURES, {filter: (struct)=> struct.structureType == STRUCTURE_EXTRACTOR}).length == 0))
     {
         return false;
     }
@@ -52,7 +52,7 @@ function spawn(source)
             if(haulerCreep === undefined)
             {
                 const container = source.pos.findClosestByRange(FIND_STRUCTURES, {filter: (struct) => struct.structureType == STRUCTURE_CONTAINER });
-                if(container)
+                if(container && source.pos.isNearTo(container))
                 {
                     utils.getClosestSpawner(source.pos).createCreep(getBodyPartsHauler(source, isMineral), "Hauler" + source.id + i, 
                         { role: 'hauler', full: false, containerId: container.id, resourceType: (isMineral ? source.mineralType : RESOURCE_ENERGY) });

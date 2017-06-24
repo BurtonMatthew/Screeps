@@ -26,7 +26,7 @@ function spawn(controller)
     // No good tech, upgrader swarm!
     else
     {
-        return utils.spawnToCount(_.partial(utils.getAvailableSpawner, room), 4,
+        return utils.spawnToCount(_.partial(utils.getAvailableSpawner, controller.room), 4,
                 getBodyPartsUpgraderSwarm(controller.room), "Upgrader" + controller.room.name, { role: 'upgrader', full: false, home: controller.room.name });
     }
     return false;
@@ -46,13 +46,12 @@ function getBodyPartsUpgraderStatic(room)
 
 function getBodyPartsUpgraderSwarm(room)
 {
-    var roomEnergy = room.energyCapacityAvailable;
-    var workParts = 0;
+    const affordableParts = Math.floor(room.energyCapacityAvailable / 200);
+    const workParts = Math.min(affordableParts, 4);
     var parts = [];
-    while(workParts < 2 && roomEnergy >= 200)
+    
+    for(var i=0; i<workParts; ++i)
     {
-        roomEnergy -= 200
-        workParts++;
         parts.push(WORK);
         parts.push(MOVE);
         parts.push(CARRY);

@@ -57,7 +57,7 @@ function visualizeArraySquares(arr, colour)
     }
 }
 
-function createLayout(room)
+function createBaseLayout(room)
 {
     var layout = {};
     var usedPositions = [];
@@ -375,6 +375,6 @@ function uniqueArray(arr)
 }
 module.exports = {
     visualize,
-    createLayout,
+    createBaseLayout,
     apply
 };
