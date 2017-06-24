@@ -25,7 +25,8 @@ module.exports.loop = function ()
     for(var name in Game.rooms)
     {
         var room = Game.rooms[name];
-        roomExpansion.run(room);
+        if(room.controller !== undefined && room.controller.my)
+            roomExpansion.run(room);
     }
     
     for(var i in Game.creeps) 
