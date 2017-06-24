@@ -3,6 +3,7 @@ let roomLayout = require('room.layout');
 let strategyHarvest = require('strategy.harvest');
 let strategyExpansion = require('strategy.expansion');
 let strategyUpgrade = require('strategy.upgrade');
+let strategyBuild = require('strategy.build');
 
 
 function getBodyPartsBuilder(room)
@@ -18,13 +19,7 @@ function getBodyPartsBuilder(room)
         parts.push(MOVE);
         parts.push(CARRY);
     }
-    
-    //if(roomEnergy >= 100)
-    //{
-    //    parts.push(MOVE);
-    //    parts.push(CARRY);
-    //}
-        
+
     return parts;
 }
 
@@ -34,11 +29,7 @@ var roomExpansion = {
     {
         const creeps = room.find(FIND_MY_CREEPS);
         const harvesters = _.filter(room.find(FIND_MY_CREEPS), (creep) => creep.memory.role == 'harvester');
-        const builders = _.filter(room.find(FIND_MY_CREEPS), (creep) => creep.memory.role == 'builder');
         const maintenances = _.filter(room.find(FIND_MY_CREEPS), (creep) => creep.memory.role == 'maintenance');
-        const upgraders = _.filter(room.find(FIND_MY_CREEPS), (creep) => creep.memory.role == 'upgrader');
-        const refillers = _.filter(room.find(FIND_MY_CREEPS), (creep) => creep.memory.role == 'refiller');
-        const spawners = room.find(FIND_MY_STRUCTURES, {filter: (struct) => struct.structureType == STRUCTURE_SPAWN});
         const sources = room.find(FIND_SOURCES);
         const conSites = room.find(FIND_CONSTRUCTION_SITES);
         const minerals = room.find(FIND_MINERALS);
@@ -47,20 +38,14 @@ var roomExpansion = {
             utils.getAvailableSpawner(room).createCreep( [WORK, CARRY, MOVE], 'Harvester' + Math.floor(Math.random() * 1000000), { role: 'harvester', full: false, home: room.name });
         else if(utils.spawnStrategyArray(strategyHarvest.spawn, sources)) { }
         else if(utils.spawnStrategyArray(strategyHarvest.spawn, minerals)) { }
-        else if(builders.length < 1 && conSites.length > 0)
-            utils.getAvailableSpawner(room).createCreep( getBodyPartsBuilder(room), 'Builder' + Math.floor(Math.random() * 1000000), { role: 'builder', full: false, home: room.name });
+        else if(strategyBuild.spawn(room)) {}
         else if(maintenances.length < 2)
             utils.getAvailableSpawner(room).createCreep( getBodyPartsBuilder(room), 'Maintenance' + Math.floor(Math.random() * 1000000), { role: 'maintenance', full: false, home: room.name });
-        //else if(upgraders.length < 1 + (room.storage === undefined ? 4 : 0))
-        //    utils.getAvailableSpawner(room).createCreep( getBodyPartsUpgrader(room), 'Upgrader' + Math.floor(Math.random() * 1000000), { role: 'upgrader', full: false, home: room.name });
         else if(strategyUpgrade.spawn(room.controller)) {}
         else if(strategyExpansion.spawn(spawners[0])) {}
             
         if("layout" in room.memory)
         {
-            if(room.roomName == "W1N3")
-                console.log("in here2");
-            
             if(room.memory.lastApply === undefined || room.memory.lastApply + 2000 < Game.time)
             {
                 roomLayout.apply(room, room.memory.layout);
