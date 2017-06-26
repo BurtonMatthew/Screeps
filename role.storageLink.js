@@ -5,32 +5,35 @@ var roleStorageLink = {
     run: function(creep) 
     {
         const link = Game.getObjectById(creep.memory.linkId);
-        if(link.energy > 0)
+        if(creep.room.memory.linkStorage === undefined)
         {
-            //if(creep.room.memory.linkReqEnergy === undefined)
-            //{
-                if(creep.withdraw(link, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) 
-                {
-                    creep.moveTo(link);
-                }
-            //}
-            //else
-            //{
-                
-            //}
+            creep.room.memory.linkStorage = link.id;
+        }
+        
+        if(creep.room.memory.linkReqEnergy === undefined)
+        {
+            if(creep.withdraw(link, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) 
+            {
+                creep.moveTo(link);
+            }
+            if(creep.transfer(creep.room.storage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) 
+            {
+                creep.moveTo(creep.room.storage);
+            }
         }
         else
         {
-            if(creep.room.memory.linkReqEnergy === undefined)
+            if(creep.withdraw(creep.room.storage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) 
             {
-                creep.room.memory.linkReqEnergy = link.id;
+                creep.moveTo(creep.room.storage);
+            }
+            if(creep.transfer(link, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) 
+            {
+                creep.moveTo(link);
             }
         }
         
-        if(creep.transfer(creep.room.storage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) 
-        {
-            creep.moveTo(creep.room.storage);
-        }
+        
 	}
 };
 

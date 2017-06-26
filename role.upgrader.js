@@ -10,9 +10,15 @@ var roleUpgrader = {
         }
         else if(creep.memory.full)
         {
-            if(creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE) 
+            const upgradeError = creep.upgradeController(creep.room.controller)
+            if(upgradeError == ERR_NOT_IN_RANGE) 
             {
                 creep.moveTo(creep.room.controller);
+            }
+            
+            else if(upgradeError == OK && creep.memory.travelTime === undefined)
+            {
+                creep.memory.travelTime = CREEP_LIFE_TIME - creep.ticksToLive;
             }
             
             if(creep.memory.linkId !== undefined)

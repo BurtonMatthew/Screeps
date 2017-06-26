@@ -44,7 +44,7 @@ var roomExpansion = {
         else if(maintenances.length < 2)
             utils.getAvailableSpawner(room).createCreep( getBodyPartsBuilder(room), 'Maintenance' + Math.floor(Math.random() * 1000000), { role: 'maintenance', full: false, home: room.name });
         else if(strategyUpgrade.spawn(room.controller)) {}
-        else if(strategyExpansion.spawn(spawners[0])) {}
+        else if(strategyExpansion.spawn(room)) {}
         else if(explorers.length < 1)
             utils.getAvailableSpawner(room).createCreep( [MOVE], 'Explorer' + Math.floor(Math.random() * 1000000), { role: 'explorer' });
             
@@ -84,24 +84,37 @@ var roomExpansion = {
             }
         }
         
+        const links = room.find(FIND_MY_STRUCTURES, {filter: (structure) => { return structure.structureType == STRUCTURE_LINK; }});
         if(room.memory.linkReqEnergy !== undefined)
         {
             const reqLink = Game.getObjectById(room.memory.linkReqEnergy);
-            if(reqLink.energy > 500)
+            if(reqLink.energy > 600)
             {
                 delete room.memory.linkReqEnergy;
             }
             else
             {
                 const reqEnergy = reqLink.energyCapacity - reqLink.energy;
-                const links = room.find(FIND_MY_STRUCTURES, {filter: (structure) => { return structure.structureType == STRUCTURE_LINK; }});
+                
                 for(var i=0, len=links.length; i<len; ++i)
                 {
-                    if(links[i].id != room.memory.linkReqEnergy && links[i].cooldown == 0 /*&& links[i].energy >= reqEnergy*/ && links[i].energy == 800 && reqLink.energy == 0)
+                    if(links[i].id != room.memory.linkReqEnergy && links[i].cooldown == 0 && links[i].energy >= reqEnergy)
                     {
-                        links[i].transferEnergy(reqLink/*, reqEnergy*/);
+                        links[i].transferEnergy(reqLink);
                         break;
                     }
+                }
+            }
+        }
+        else if(room.memory.linkStorage !== undefined)
+        {
+            const storageLink = Game.getObjectById(room.memory.linkStorage)
+            for(var i=0, len=links.length; i<len; ++i)
+            {
+                if(links[i].id != room.memory.linkStorage && links[i].cooldown == 0 && links[i].energy == links[i].energyCapacity)
+                {
+                    links[i].transferEnergy(storageLink);
+                    break;
                 }
             }
         }

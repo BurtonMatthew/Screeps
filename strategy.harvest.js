@@ -18,7 +18,7 @@ function spawn(source)
     else if(harvestCreepB !== undefined)
         harvestCreep = harvestCreepB;
     else
-        harvestCreep === undefined;
+        harvestCreep = undefined;
     
     if(harvestCreep === undefined  
         || (harvestCreep.memory.travelTime !== undefined && harvestCreep.ticksToLive < harvestCreep.memory.travelTime + (harvestCreep.body.length * CREEP_SPAWN_TIME)))

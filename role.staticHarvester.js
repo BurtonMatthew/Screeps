@@ -1,3 +1,5 @@
+let utils = require('utils');
+
 var roleStaticHarvester = {
 
     /** @param {Creep} creep **/
@@ -7,7 +9,8 @@ var roleStaticHarvester = {
             var link = Game.getObjectById(creep.memory.linkId);
             if(creep.transfer(link, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE)
             {
-                creep.moveTo(link);
+                creep.moveTo(link, {range: 1});
+                //utils.moveTo(creep, link.pos, {range:1});
             }
             
             if(creep.carry.energy == 0)
@@ -22,11 +25,14 @@ var roleStaticHarvester = {
             if(creep.memory.standX !== undefined && (creep.pos.x != creep.memory.standX || creep.pos.y != creep.memory.standY))
             {
                 creep.moveTo(creep.memory.standX, creep.memory.standY);
+                //utils.moveTo(creep, new RoomPosition(creep.memory.standX, creep.memory.standY, creep.room.name), {});
+                
             }
             const harvestError = creep.harvest(source)
             if(harvestError == ERR_NOT_IN_RANGE) 
             {
-                creep.moveTo(source);
+                creep.moveTo(source, {range: 1});
+                //utils.moveTo(creep, source.pos, {range: 1});
             }
             else if(harvestError == OK && creep.memory.travelTime === undefined)
             {
