@@ -1,8 +1,12 @@
+var utils = require('utils');
+
 var roleHauler = {
 
     /** @param {Creep} creep **/
     run: function(creep) {
-        if(creep.memory.full)
+        
+        if(utils.checkSwaps(creep)) {}
+        else if(creep.memory.full)
         {
             var target = false;
             if(creep.memory.resourceType == RESOURCE_ENERGY)

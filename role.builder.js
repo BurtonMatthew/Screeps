@@ -46,9 +46,9 @@ var roleBuilder = {
                     target = creep.pos.findClosestByRange(FIND_MY_CONSTRUCTION_SITES, {filter: (struct) => struct.structureType == STRUCTURE_EXTENSION});
                 if(!target)
                     target = creep.pos.findClosestByRange(FIND_MY_CONSTRUCTION_SITES);
-                if(creep.build(target) == ERR_NOT_IN_RANGE) {
-                    //utils.moveTo(creep, target.pos, {});
-                    creep.moveTo(target);
+                if(creep.build(target) == ERR_NOT_IN_RANGE) 
+                {
+                    utils.moveTo(creep, target);
                 }
             }
             else

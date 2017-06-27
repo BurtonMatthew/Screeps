@@ -26,7 +26,6 @@ function spawn(room)
                     }});
             if(route.length > 0 && route.length < 9)
             {
-                /*
                 if(_.filter(Game.creeps, (creep) => creep.name == ("ExpUpgrader" + myControllers[i].room.name)).length < 1)
                 {
                     utils.getAvailableSpawner().createCreep( [WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE], ("ExpUpgrader" + myControllers[i].room.name), { role: 'upgrader', full: false, home: myControllers[i].room.name });
@@ -47,7 +46,7 @@ function spawn(room)
                         return true;
                     }
                 }
-                */
+
                 for(var j=0; j<80; ++j)
                 {
                     if(_.filter(Game.creeps, (creep) => creep.name == ("ExpTruck" + myControllers[i].room.name + j)).length < 1)
@@ -74,7 +73,7 @@ function getBestExpansionRoom()
             continue;
         
         var room = Memory.mapInfo[roomName];
-        if(!room.hasController || "owner" in room.controller)
+        if(!room.hasController /*|| room.controller.my*/ || "owner" in room.controller)
             continue;
         
         var totalScore = (sourceScore(room)             * 0.45)

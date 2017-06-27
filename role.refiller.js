@@ -4,7 +4,9 @@ var roleRefiller = {
 
     /** @param {Creep} creep **/
     run: function(creep) {
-        if(creep.memory.full)
+        
+        if(utils.checkSwaps(creep)) {}
+        else if(creep.memory.full)
         {
             var target = creep.pos.findClosestByRange(FIND_STRUCTURES, {
                     filter: (structure) => {

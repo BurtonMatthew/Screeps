@@ -112,13 +112,21 @@ var utils =
     
     moveTo: function(creep, dest, opts)
     {
+        if(opts === undefined)
+            opts = {};
+        if(dest.pos !== undefined)
+            dest = dest.pos;
+            
+        if(creep.pos.x == dest.x && creep.pos.y == dest.y)
+            return OK;
+            
         if(creep.memory._myMove === undefined)
         {                           // destination, path, currentIndex, curX, curY, stuck timer
-            creep.memory._myMove = { d: {x:-1,y:-1}, p:"",i:0,x:-1,y:-1,s:0 };
+            creep.memory._myMove = { d: {x:-1,y:-1,roomName:""}, p:"",i:0,x:-1,y:-1,s:0 };
         }
         
         const cache = creep.memory._myMove;
-        if(dest.x != cache.d.x || dest.y != cache.d.y || Math.random() < 0.01)
+        if(dest.x != cache.d.x || dest.y != cache.d.y ||  creep.memory._myMove.p.length == creep.memory._myMove.i ||  Math.random() < 0.01)
         {
             const pathInfo = PathFinder.search(creep.pos, {pos: dest, range: ("range" in opts ? opts.range : 0)}, 
             {
@@ -182,16 +190,16 @@ var utils =
             creep.memory._myMove.p = pathDirs;
             creep.memory._myMove.i = 0;
             creep.memory._myMove.d = dest;
-            creep.memory._myMove.x = creep.x;
-            creep.memory._myMove.y = creep.y;
+            creep.memory._myMove.x = creep.pos.x;
+            creep.memory._myMove.y = creep.pos.y;
             creep.memory._myMove.s = 0;
         }
         
         
-        if(creep.memory._myMove.x !== creep.x || creep.memory._myMove.y !== creep.y)
+        if(creep.memory._myMove.x !== creep.pos.x || creep.memory._myMove.y !== creep.pos.y)
         {
-            creep.memory._myMove.x = creep.x
-            creep.memory._myMove.y = creep.y;
+            creep.memory._myMove.x = creep.pos.x
+            creep.memory._myMove.y = creep.pos.y;
             ++creep.memory._myMove.i;
             creep.memory._myMove.s = 0;
         }
@@ -200,7 +208,55 @@ var utils =
             ++creep.memory._myMove.s;
         }
         
-        creep.move(creep.memory._myMove.p[creep.memory._myMove.i]);
+        if(creep.memory._myMove.s > 6)
+        {
+            // Oh no, we're stuck!
+            // Is some jerk blocking the highway?
+            var nextPos;
+            switch(creep.memory._myMove.p[creep.memory._myMove.i])
+            {
+                case TOP:           nextPos = new RoomPosition(creep.pos.x, creep.pos.y-1, creep.pos.roomName);     break;
+                case TOP_RIGHT:     nextPos = new RoomPosition(creep.pos.x+1, creep.pos.y-1, creep.pos.roomName);   break;
+                case RIGHT:         nextPos = new RoomPosition(creep.pos.x+1, creep.pos.y, creep.pos.roomName);     break;
+                case BOTTOM_RIGHT:  nextPos = new RoomPosition(creep.pos.x+1, creep.pos.y+1, creep.pos.roomName);   break;
+                case BOTTOM:        nextPos = new RoomPosition(creep.pos.x, creep.pos.y+1, creep.pos.roomName);     break;
+                case BOTTOM_LEFT:   nextPos = new RoomPosition(creep.pos.x-1, creep.pos.y+1, creep.pos.roomName);   break;
+                case LEFT:          nextPos = new RoomPosition(creep.pos.x-1, creep.pos.y, creep.pos.roomName);     break;
+                case TOP_LEFT:      nextPos = new RoomPosition(creep.pos.x-1, creep.pos.y-1, creep.pos.roomName);   break;
+            }
+            if(nextPos === undefined)
+                console.log("Lets see " + creep.memory._myMove.p.length + " " + creep.memory._myMove.i);
+            const creeps = creep.room.lookForAt(LOOK_CREEPS, nextPos);
+            if(creeps.length > 0 && creeps[0].my)
+            {
+                creeps[0].memory.swapWithMe = creep.id;
+                creep.memory._myMove.s = 0;
+            }
+            else // uuuh... what's in our way?
+            {
+                // Repath
+                creep.memory._myMove.d = {x:-1,y:-1,roomName:""};
+            }
+        }
+        
+        return creep.move(creep.memory._myMove.p[creep.memory._myMove.i]);
+    },
+    
+    checkSwaps: function(creep)
+    {
+        if(creep.memory.swapWithMe !== undefined)
+        {
+            const otherCreep = Game.getObjectById(creep.memory.swapWithMe);
+            if(otherCreep && otherCreep.my)
+            {
+                if(utils.moveTo(creep, otherCreep.pos, {}) == OK)
+                {
+                    delete creep.memory.swapWithMe;
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 };
 

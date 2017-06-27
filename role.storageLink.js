@@ -10,7 +10,8 @@ var roleStorageLink = {
             creep.room.memory.linkStorage = link.id;
         }
         
-        if(creep.room.memory.linkReqEnergy === undefined)
+        if(utils.checkSwaps(creep)) {}
+        else if(creep.room.memory.linkReqEnergy === undefined)
         {
             if(creep.withdraw(link, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) 
             {

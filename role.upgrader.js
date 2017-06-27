@@ -4,7 +4,8 @@ var roleUpgrader = {
     /** @param {Creep} creep **/
     run: function(creep) 
     {
-        if(creep.room.name != creep.memory.home)
+        if(utils.checkSwaps(creep)) {}
+        else if(creep.room.name != creep.memory.home)
         {
             utils.navToRoom(creep, creep.memory.home);
         }

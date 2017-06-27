@@ -6,13 +6,8 @@ var roleMaintenance = {
     run: function(creep) {
         const hostiles = creep.room.find(FIND_HOSTILE_CREEPS);
         
-        /*if(hostiles.length > 0)
-        {
-            var tower = creep.pos.findClosestByRange(FIND_MY_STRUCTURES);
-            if(tower)
-                creep.moveTo(tower);
-        }
-        else */if(creep.room.name != creep.memory.home)
+        if(utils.checkSwaps(creep)) {}
+        else if(creep.room.name != creep.memory.home)
         {
             utils.navToRoom(creep, creep.memory.home);
         }
