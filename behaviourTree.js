@@ -1,18 +1,21 @@
+var FAIL = 0;
+var SUCCESS = 1;
+var INPROGRESS = 2;
 var behaviourTree = 
 {
-    FAIL: 0,
-    SUCCESS: 1,
-    INPROGRESS: 2,
+    FAIL: FAIL,
+    SUCCESS: SUCCESS,
+    INPROGRESS: INPROGRESS,
 
     select: function()
     {
         for (var i = 0, len = arguments.length; i < len; ++i) 
         {
             const nodeResult = arguments[i]();
-            if(nodeResult != 0)
+            if(nodeResult != FAIL)
                 return nodeResult;
         }
-        return 0;
+        return FAIL;
     },
 
     sequence: function()
@@ -20,10 +23,10 @@ var behaviourTree =
         for (var i = 0, len = arguments.length; i < len; ++i) 
         {
             const nodeResult = arguments[i]();
-            if(nodeResult != 1)
+            if(nodeResult != SUCCESS)
                 return nodeResult;
         }
-        return 1;
+        return SUCCESS;
     }
 };
 
