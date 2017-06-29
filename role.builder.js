@@ -2,25 +2,25 @@ let utils = require('utils');
 
 let priorityList =
 {
-    STRUCTURE_TOWER: 0,
-    STRUCTURE_CONTAINER: 1,
-    STRUCTURE_LINK: 1,
-    STRUCTURE_SPAWN: 2,
-    STRUCTURE_STORAGE: 2,
-    STRUCTURE_EXTENSION: 3,
-    STRUCTURE_EXTRACTOR: 3,
-    STRUCTURE_ROAD: 4,
-    STRUCTURE_WALL: 5,
-    STRUCTURE_RAMPART: 5,
-    STRUCTURE_KEEPER_LAIR: 9,
-    STRUCTURE_PORTAL: 9,
-    STRUCTURE_CONTROLLER: 9,
-    STRUCTURE_OBSERVER: 9,
-    STRUCTURE_POWER_BANK: 9,
-    STRUCTURE_POWER_SPAWN: 9,
-    STRUCTURE_LAB: 9,
-    STRUCTURE_TERMINAL: 9,
-    STRUCTURE_NUKER: 9
+    tower: 0,
+    container: 1,
+    link: 1,
+    spawn: 2,
+    storage: 2,
+    extension: 3,
+    extractor: 3,
+    road: 4,
+    constructedWall: 5,
+    rampart: 5,
+    keeperLair: 9,
+    portal: 9,
+    controller: 9,
+    observer: 9,
+    powerBank: 9,
+    powerSpawn: 9,
+    lab: 9,
+    terminal: 9,
+    nuker: 9
 };
 var roleBuilder = {
 
@@ -37,6 +37,24 @@ var roleBuilder = {
         }
         else
         {
+            /*
+            var target =_(creep.room.find(FIND_MY_CONSTRUCTION_SITES))
+                .foldl(function(arr, n)
+                        {
+                            var curPri = (arr.length == 0) ? 0xff : priorityList[arr[0].structureType];
+                            var newPri = priorityList[n.structureType];
+                            if(newPri < curPri)
+                                return [n];
+                            else if(curPri == newPri)
+                                return arr.concat([n]);
+                            else
+                                return arr; 
+                        }, [])
+                .sortBy(n => creep.pos.getRangeTo(n))
+                .take()
+                .value();
+            */
+            
             var targets = creep.room.find(FIND_MY_CONSTRUCTION_SITES);
             if(targets.length) {
                 var target = creep.pos.findClosestByRange(FIND_MY_CONSTRUCTION_SITES, {filter: (struct) => struct.structureType == STRUCTURE_SPAWN});
@@ -50,7 +68,16 @@ var roleBuilder = {
                 {
                     creep.moveTo(target);
                 }
+                
             }
+            /*
+            if(target)
+            {
+                if(creep.build(target) == ERR_NOT_IN_RANGE) 
+                {
+                    creep.moveTo(target);
+                }
+            }*/
             else
             {
                 creep.suicide();
