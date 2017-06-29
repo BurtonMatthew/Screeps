@@ -1,8 +1,10 @@
 var utils = require('utils');
+let bTree = require('behaviourTree');
+
 function spawn(controller)
 {
     if(controller === undefined || !controller.my)
-        return false;
+        return bTree.FAIL;
         
     if(controller.room.storage !== undefined && controller.pos.inRangeTo(controller.room.storage, 3))
     {
@@ -10,7 +12,7 @@ function spawn(controller)
         {
             utils.getClosestSpawner(controller.pos).createCreep(getBodyPartsUpgraderStatic(controller.room), "Upgrader" + controller.room.name
                 , { role: 'upgrader', full: false, home: controller.room.name });
-            return true;
+            return bTree.SUCCESS;
         }
     }
     else if(controller.level >= 6) // Super hacky way to see if we're a link based controller, only applies to starting room
@@ -33,7 +35,7 @@ function spawn(controller)
             const link = controller.pos.findClosestByRange(FIND_MY_STRUCTURES, {filter: (struct) => struct.structureType == STRUCTURE_LINK});
             utils.getClosestSpawner(controller.pos).createCreep(getBodyPartsUpgraderStatic(controller.room), "Upgrader" + (upgraderCreep == upgraderCreepB ? "A" : "B") + controller.room.name
                 , { role: 'upgrader', full: true, home: controller.room.name, linkId: link.id});
-            return true;
+            return bTree.SUCCESS;
         }
     }
     // No good tech, upgrader swarm!
@@ -42,7 +44,7 @@ function spawn(controller)
         return utils.spawnToCount(_.partial(utils.getAvailableSpawner, controller.room), 4,
                 getBodyPartsUpgraderSwarm(controller.room), "Upgrader" + controller.room.name, { role: 'upgrader', full: false, home: controller.room.name });
     }
-    return false;
+    return bTree.FAIL;
 }
 
 function getBodyPartsUpgraderStatic(room)

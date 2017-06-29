@@ -1,10 +1,11 @@
-var mapM = require('map.memory');
-var utils = require('utils');
+let mapM = require('map.memory');
+let utils = require('utils');
+let bTree = require('behaviourTree');
 
 function spawn(room)
 {
     if(room.storage === undefined || room.storage.store[RESOURCE_ENERGY] < 2000)
-        return false;
+        return bTree.FAIL;
         
     const myControllers = _.filter(Game.structures, (struct) => struct.structureType == STRUCTURE_CONTROLLER);
     if(Game.gcl.level > myControllers.length && _.filter(Game.creeps, (creep) => creep.name == "Expander").length < 1 )
@@ -14,7 +15,7 @@ function spawn(room)
         if(route.length > 0 && route.length < 9)
         {
             utils.getAvailableSpawner(room).createCreep( [CLAIM, MOVE, MOVE, MOVE, MOVE], 'Expander', { role: 'expander', home: expansionRoom });
-            return true; 
+            return bTree.SUCCESS; 
         }
     }
     
@@ -32,13 +33,13 @@ function spawn(room)
                 if(_.filter(Game.creeps, (creep) => creep.name == ("ExpUpgrader" + myControllers[i].room.name)).length < 1)
                 {
                     utils.getAvailableSpawner(room).createCreep( [WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE], ("ExpUpgrader" + myControllers[i].room.name), { role: 'upgrader', full: false, home: myControllers[i].room.name });
-                    return true;
+                    return bTree.SUCCESS; 
                 }
                 
                 if(_.filter(Game.creeps, (creep) => creep.name == ("ExpMaintainer" + myControllers[i].room.name)).length < 1)
                 {
                     utils.getAvailableSpawner(room).createCreep( [WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE], ("ExpMaintainer" + myControllers[i].room.name), { role: 'maintenance', full: false, home: myControllers[i].room.name });
-                    return true;
+                    return bTree.SUCCESS;
                 }
                 
                 for(var j=0; j<8; ++j)
@@ -46,7 +47,7 @@ function spawn(room)
                     if(_.filter(Game.creeps, (creep) => creep.name == ("ExpBuilder" + myControllers[i].room.name + j)).length < 1)
                     {
                         utils.getAvailableSpawner(room).createCreep( [WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE], ("ExpBuilder" + myControllers[i].room.name + j), { role: 'builder', full: false, home: myControllers[i].room.name });
-                        return true;
+                        return bTree.SUCCESS;
                     }
                 }
 
@@ -55,14 +56,14 @@ function spawn(room)
                     if(_.filter(Game.creeps, (creep) => creep.name == ("ExpTruck" + myControllers[i].room.name + j)).length < 1)
                     {
                         utils.getAvailableSpawner(room).createCreep( [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE], ("ExpTruck" + myControllers[i].room.name + j), { role: 'truck', full: false, home: myControllers[i].room.name });
-                        return true;
+                        return bTree.SUCCESS;
                     }
                 }
             }
         }
     }
     
-    return false;
+    return bTree.FAIL;
 }
 
 function getBestExpansionRoom()

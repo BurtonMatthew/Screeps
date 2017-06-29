@@ -1,23 +1,29 @@
 var behaviourTree = 
 {
+    FAIL: 0,
+    SUCCESS: 1,
+    INPROGRESS: 2,
+
     select: function()
     {
         for (var i = 0, len = arguments.length; i < len; ++i) 
         {
-            if(arguments[i]())
-                return true;
+            const nodeResult = arguments[i]();
+            if(nodeResult != 0)
+                return nodeResult;
         }
-        return false;
+        return 0;
     },
 
     sequence: function()
     {
         for (var i = 0, len = arguments.length; i < len; ++i) 
         {
-            if(!arguments[i]())
-                return false;
+            const nodeResult = arguments[i]();
+            if(nodeResult != 1)
+                return nodeResult;
         }
-        return true;
+        return 1;
     }
 };
 
