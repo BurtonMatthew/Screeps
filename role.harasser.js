@@ -4,7 +4,7 @@ roleHarasser =
      /** @param {Creep} creep **/
     run: function(creep) 
     {
-        const tarRoom = "W2N2";
+        const tarRoom = "W1N1";
         if(creep.room.name != tarRoom)
         {
             utils.navToRoom(creep, tarRoom);
@@ -15,10 +15,10 @@ roleHarasser =
         //}
         else
         {
-            const tower = creep.pos.findClosestByRange(FIND_HOSTILE_STRUCTURES, {filter: (structure) => { return structure.structureType == STRUCTURE_TOWER; }});
+            const tower = creep.pos.findClosestByRange(FIND_HOSTILE_STRUCTURES);
             if(tower)
             {
-                const ret = creep.rangedAttack(tower);
+                const ret = creep.attack(tower);
                 if(ret == ERR_NOT_IN_RANGE || ret == ERR_NO_BODYPART)
                 {
                     creep.moveTo(tower);

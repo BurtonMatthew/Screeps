@@ -75,7 +75,7 @@ var utils =
         if(closest)
             return closest;
         else
-            return { createCreep: function(body,name,mem) { } }; //No avail spawner, but return spawn function so we can avoid null checks
+            return { createCreep: function(body,name,mem) { return ERR_BUSY; } }; //No avail spawner, but return spawn function so we can avoid null checks
     },
     
     getAvailableSpawner: function(room)
@@ -84,7 +84,7 @@ var utils =
         if(availSpawners.length > 0)
             return availSpawners[0];
         else
-            return { createCreep: function(body,name,mem) { } }; //No avail spawner, but return spawn function so we can avoid null checks
+            return { createCreep: function(body,name,mem) { return ERR_BUSY; } }; //No avail spawner, but return spawn function so we can avoid null checks
     },
     
     spawnToCount: function(getSpawnerFunc, count, body, name, mem)
@@ -113,7 +113,7 @@ var utils =
     moveTo: function(creep, dest, opts)
     {
         if(opts === undefined)
-            opts = {};
+            opts = { range: 0 };
         if(dest.pos !== undefined)
             dest = dest.pos;
             
@@ -128,7 +128,7 @@ var utils =
         const cache = creep.memory._myMove;
         if(dest.x != cache.d.x || dest.y != cache.d.y ||  creep.memory._myMove.p.length == creep.memory._myMove.i ||  Math.random() < 0.01)
         {
-            const pathInfo = PathFinder.search(creep.pos, {pos: dest, range: ("range" in opts ? opts.range : 0)}, 
+            const pathInfo = PathFinder.search(creep.pos, {pos: dest, range: opts.range}, 
             {
                 maxRooms:1,
                 plainCost:2,

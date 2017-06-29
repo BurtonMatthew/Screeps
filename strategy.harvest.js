@@ -2,7 +2,7 @@ var utils = require('utils');
 
 function spawn(source)
 {
-    const isMineral = "mineralAmount" in source
+    const isMineral = "mineralAmount" in source;
     if(isMineral && (source.mineralAmount == 0 || source.room.find(FIND_STRUCTURES, {filter: (struct)=> struct.structureType == STRUCTURE_EXTRACTOR}).length == 0))
     {
         return false;

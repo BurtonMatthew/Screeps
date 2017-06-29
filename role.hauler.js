@@ -11,9 +11,10 @@ var roleHauler = {
             var target = false;
             if(creep.memory.resourceType == RESOURCE_ENERGY)
             {
-                target = creep.pos.findClosestByRange(FIND_STRUCTURES, {
+                target = creep.pos.findClosestByRange(FIND_MY_STRUCTURES, {
                         filter: (structure) => {
-                            return (structure.structureType == STRUCTURE_EXTENSION ||
+                            return (structure.structureType == STRUCTURE_LINK || 
+                                    structure.structureType == STRUCTURE_EXTENSION ||
                                     structure.structureType == STRUCTURE_SPAWN ||
                                     structure.structureType == STRUCTURE_TOWER) && structure.energy < structure.energyCapacity;
                         }
