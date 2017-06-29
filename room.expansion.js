@@ -24,33 +24,44 @@ function getBodyPartsBuilder(room)
     return parts;
 }
 
-function spawnBaseHarvesters(room)
+function ensureBaseHarvesters(room)
 {
     const creeps = room.find(FIND_MY_CREEPS);
     const harvesters = _.filter(room.find(FIND_MY_CREEPS), (creep) => creep.memory.role == 'harvester');
 
     if(creeps.length < 4 && harvesters.length < 3)
-        return utils.getAvailableSpawner(room).createCreep( [WORK, CARRY, MOVE], 'Harvester' + Math.floor(Math.random() * 1000000), { role: 'harvester', full: false, home: room.name }) == OK;
+        if(utils.getAvailableSpawner(room).createCreep( [WORK, CARRY, MOVE], 'Harvester' + Math.floor(Math.random() * 1000000), { role: 'harvester', full: false, home: room.name }) == OK)
+            return bTree.INPROGRESS;
+        else
+            return bTree.FAIL;
 
-    return false;
+    return bTree.SUCCESS;
 }
 
-function spawnBaseMaintenances(room)
+function ensureBaseMaintenances(room)
 {
     const maintenances = _.filter(room.find(FIND_MY_CREEPS), (creep) => creep.memory.role == 'maintenance');
     const conSites = room.find(FIND_CONSTRUCTION_SITES);
 
     if(maintenances.length < 2)
-        return utils.getAvailableSpawner(room).createCreep( getBodyPartsBuilder(room), 'Maintenance' + Math.floor(Math.random() * 1000000), { role: 'maintenance', full: false, home: room.name });
-    return false;
+        if(utils.getAvailableSpawner(room).createCreep(getBodyPartsBuilder(room), 'Maintenance' + Math.floor(Math.random() * 1000000), { role: 'maintenance', full: false, home: room.name }) == OK)
+            return bTree.INPROGRESS;
+        else
+            return bTree.FAIL;
+    
+    return bTree.SUCCESS;
 }
 
-function spawnExplorers(room)
+function ensureExplorers(room)
 {
     const explorers = _.filter(Game.creeps, (creep) => creep.memory.role == 'explorer');
     if(explorers.length < 1)
-        return utils.getAvailableSpawner(room).createCreep( [MOVE], 'Explorer' + Math.floor(Math.random() * 1000000), { role: 'explorer' });
-    return false;
+        if(utils.getAvailableSpawner(room).createCreep( [MOVE], 'Explorer' + Math.floor(Math.random() * 1000000), { role: 'explorer' }) == OK)
+            return bTree.INPROGRESS;
+        else
+            return bTree.FAIL;
+    
+    return bTree.SUCCESS;
 }
 
 var roomExpansion = {
@@ -60,16 +71,16 @@ var roomExpansion = {
         const sources = room.find(FIND_SOURCES);
         const minerals = room.find(FIND_MINERALS);
 
-        bTree.select
+        bTree.sequence
         (
-             _.partial(spawnBaseHarvesters, room)
+             _.partial(ensureBaseHarvesters, room)
             ,_.partial(utils.spawnStrategyArray, strategyHarvest.spawn, sources)
             ,_.partial(utils.spawnStrategyArray, strategyHarvest.spawn, minerals)
             ,_.partial(strategyBuild.spawn, room)
-            ,_.partial(spawnBaseMaintenances, room)
+            ,_.partial(ensureBaseMaintenances, room)
             ,_.partial(strategyUpgrade.spawn, room.controller)
             ,_.partial(strategyExpansion.spawn, room)
-            ,_.partial(spawnExplorers, room)
+            ,_.partial(ensureExplorers, room)
         );
         
         if("layout" in room.memory)

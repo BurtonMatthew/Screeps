@@ -6,7 +6,7 @@ function spawn(source)
     const isMineral = "mineralAmount" in source;
     if(isMineral && (source.mineralAmount == 0 || source.room.find(FIND_STRUCTURES, {filter: (struct)=> struct.structureType == STRUCTURE_EXTRACTOR}).length == 0))
     {
-        return bTree.FAIL;
+        return bTree.SUCCESS;
     }
     
     const harvestCreepA = Game.creeps["HarvestA" + source.id];
@@ -40,7 +40,7 @@ function spawn(source)
             creepMem.standY = container.pos.y;
         }
         utils.getClosestSpawner(source.pos).createCreep(getBodyPartsHarvester(source, hasLink, isMineral), "Harvest" + (harvestCreep == harvestCreepB ? "A" : "B") + source.id, creepMem);
-        return bTree.SUCCESS;
+        return bTree.INPROGRESS;
     }
     else if(harvestCreep.getActiveBodyparts(CARRY) == 0) // Drop miner
     {
@@ -57,7 +57,7 @@ function spawn(source)
                 {
                     utils.getClosestSpawner(source.pos).createCreep(getBodyPartsHauler(source, isMineral), "Hauler" + source.id + i, 
                         { role: 'hauler', full: false, containerId: container.id, resourceType: (isMineral ? source.mineralType : RESOURCE_ENERGY) });
-                    return bTree.SUCCESS;
+                    return bTree.INPROGRESS;
                 }
             }
         }
@@ -69,17 +69,17 @@ function spawn(source)
         {
             const link = source.room.storage.pos.findClosestByRange(FIND_STRUCTURES, {filter: (struct) => struct.structureType == STRUCTURE_LINK });
             utils.getClosestSpawner(link.pos).createCreep([MOVE, CARRY, CARRY], "StorageLink" + source.room.name, { role: 'storagelink', linkId: link.id });
-            return bTree.SUCCESS;
+            return bTree.INPROGRESS;
         }
         
         const refillerCreep = Game.creeps["Refiller" + source.room.name];
         if(refillerCreep === undefined)
         {
             utils.getAvailableSpawner(source.room).createCreep([MOVE, MOVE, CARRY, CARRY], "Refiller" + source.room.name, { role: 'refiller', home: source.room.name });
-            return bTree.SUCCESS;
+            return bTree.INPROGRESS;
         }
     }
-    return bTree.FAIL;
+    return bTree.SUCCESS;
 }
 
 function getBodyPartsHarvester(source, hasLink, isMineral)
