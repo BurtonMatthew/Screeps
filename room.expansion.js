@@ -4,7 +4,8 @@ let strategyHarvest = require('strategy.harvest');
 let strategyExpansion = require('strategy.expansion');
 let strategyUpgrade = require('strategy.upgrade');
 let strategyBuild = require('strategy.build');
-let bTree = require('behaviourTree')
+let strategyHarvestRemote = require('strategy.harvest.remote');
+let bTree = require('behaviourTree');
 
 
 function getBodyPartsBuilder(room)
@@ -81,6 +82,7 @@ var roomExpansion = {
             ,_.partial(strategyUpgrade.spawn, room.controller)
             ,_.partial(strategyExpansion.spawn, room)
             ,_.partial(ensureExplorers, room)
+            ,_.partial(strategyHarvestRemote.ensureRemoteHarvest, room)
         );
         
         if("layout" in room.memory)
