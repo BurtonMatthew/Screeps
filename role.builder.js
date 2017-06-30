@@ -37,8 +37,7 @@ var roleBuilder = {
         }
         else
         {
-            /*
-            var target =_(creep.room.find(FIND_MY_CONSTRUCTION_SITES))
+            var target =_(_(creep.room.find(FIND_MY_CONSTRUCTION_SITES))
                 .foldl(function(arr, n)
                         {
                             var curPri = (arr.length == 0) ? 0xff : priorityList[arr[0].structureType];
@@ -49,38 +48,20 @@ var roleBuilder = {
                                 return arr.concat([n]);
                             else
                                 return arr; 
-                        }, [])
+                        }, []))
                 .sortBy(n => creep.pos.getRangeTo(n))
-                .take()
-                .value();
-            */
-            
-            var targets = creep.room.find(FIND_MY_CONSTRUCTION_SITES);
-            if(targets.length) {
-                var target = creep.pos.findClosestByRange(FIND_MY_CONSTRUCTION_SITES, {filter: (struct) => struct.structureType == STRUCTURE_SPAWN});
-                if(!target)
-                    target = creep.pos.findClosestByRange(FIND_MY_CONSTRUCTION_SITES, {filter: (struct) => struct.structureType == STRUCTURE_TOWER});
-                if(!target)
-                    target = creep.pos.findClosestByRange(FIND_MY_CONSTRUCTION_SITES, {filter: (struct) => struct.structureType == STRUCTURE_EXTENSION});
-                if(!target)
-                    target = creep.pos.findClosestByRange(FIND_MY_CONSTRUCTION_SITES);
-                if(creep.build(target) == ERR_NOT_IN_RANGE) 
-                {
-                    creep.moveTo(target);
-                }
+                .first();
                 
-            }
-            /*
             if(target)
             {
                 if(creep.build(target) == ERR_NOT_IN_RANGE) 
                 {
                     creep.moveTo(target);
                 }
-            }*/
+            }
             else
             {
-                creep.suicide();
+                creep.memory.role = "maintenance";
             }
             
             if(creep.carry.energy == 0)

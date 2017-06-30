@@ -75,7 +75,7 @@ function spawn(source)
         const refillerCreep = Game.creeps["Refiller" + source.room.name];
         if(refillerCreep === undefined)
         {
-            utils.getAvailableSpawner(source.room).createCreep([MOVE, MOVE, CARRY, CARRY], "Refiller" + source.room.name, { role: 'refiller', home: source.room.name });
+            utils.getAvailableSpawner(source.room).createCreep([MOVE, CARRY, CARRY], "Refiller" + source.room.name, { role: 'refiller', home: source.room.name });
             return bTree.INPROGRESS;
         }
     }
