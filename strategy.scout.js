@@ -20,6 +20,7 @@ function hasVision(roomName)
 
 function scoutObserver(roomName)
 {
+    /** @type {StructureObserver[]} */
     const observers = _.filter(Game.structures, (struct) => struct.structureType == STRUCTURE_OBSERVER);
     for(var i=0, len=observers.length; i<len; ++i)
     {
