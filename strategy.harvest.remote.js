@@ -9,7 +9,12 @@ function ensureRemoteHarvest(room)
     {
         bTree.sequence
         (
+            // ensure has sources
+            // ensure not hostile (figure out source keepers later)
             _.partial(strategyScout.ensureVision, exits[exitName])
+            // ensure infrastructure
+            // strat harvest
+            // claimer
         );
     }
     return bTree.SUCCESS;
