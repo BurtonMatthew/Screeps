@@ -77,14 +77,15 @@ function getBestExpansionRoom()
             continue;
         
         var room = Memory.mapInfo[roomName];
-        if(!room.hasController /*|| room.controller.my*/ || "owner" in room.controller)
+        if(!room.hasController || room.controller.my)
             continue;
         
-        var totalScore = (sourceScore(room)             * 0.45)
-                        +(distanceScore(roomName)       * 0.15)
-                        +(compactScore(room)            * 0.05)
-                        +(mineralScore(myMinerals, room)* 0.20)
-                        +(continguousScore(roomName)    * 0.15);
+        var totalScore = (sourceScore(room)                   * 0.45)
+                        +(distanceScore(roomName)             * 0.15)
+                        +(compactScore(room)                  * 0.05)
+                        +(mineralScore(myMinerals, room)      * 0.15)
+                        +(continguousScore(roomName)          * 0.15)
+                        +(sourceKeeperAdjacentScore(roomName) * 0.05);
         
         if(totalScore > bestRoomWeight)
         {
@@ -186,6 +187,25 @@ function continguousScore(roomName)
                         .filter(exit => !_.any(myRooms, exit))
                         .value().length * 0.25
     return score;
+}
+
+function sourceKeeperAdjacentScore(roomName)
+{
+    const myRoomsAdj = _(Game.rooms).filter(room => room.controller && room.controller.my)
+                                 .map(room => room.name)
+                                 .map(roomName => _.values(Game.map.describeExits(roomName)))
+                                 .flatten()
+                                 .value();
+
+    const sourceKeeperRooms = ["W4N4", "W5N4", "W6N4", "W4N5", "W6N5", "W4N6", "W5N6", "W6N6"];
+
+    
+    var result = _(Game.map.describeExits(roomName))
+                .values()
+                .filter(room => _.contains(sourceKeeperRooms, room) && !_.contains(myRoomsAdj))
+                .value().length > 0 ? 1 : 0;
+
+    return result
 }
 
 module.exports = {
