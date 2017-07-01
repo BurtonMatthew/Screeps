@@ -95,7 +95,8 @@ var utils =
         const spawner = _(Game.rooms)
                             .filter(room => room.controller && room.controller.my)
                             .sortBy(room => Game.map.findRoute(room, roomName).length)
-                            .map(room => room.find(FIND_MY_STRUCTURES, {filter: (struct) => struct.structureType == STRUCTURE_SPAWN && struct.spawning === null}))
+                            .map(room => room.find(FIND_MY_STRUCTURES, 
+                                {filter: (struct) => struct.structureType == STRUCTURE_SPAWN && struct.spawning === null}))
                             .flatten()
                             .first();
         if(spawner)

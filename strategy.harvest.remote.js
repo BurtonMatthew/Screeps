@@ -6,13 +6,13 @@ let strategyScout = require('strategy.scout');
 function ensureRemoteHarvest(room)
 {
     const exits = Game.map.describeExits(room.name);
-    for(const exitName in exits)
+    for(const exitDir in exits)
     {
         bTree.sequence
         (
-             _.partial(ensureSources, room.name)
-            ,_.partial(ensureNeutral, room) // Todo switch for dealing with source keepers
-            ,_.partial(strategyScout.ensureVision, exits[exitName])
+             _.partial(ensureSources, exits[exitDir])
+            ,_.partial(ensureNeutral, exits[exitDir]) // Todo switch for dealing with source keepers
+            ,_.partial(strategyScout.ensureVision, exits[exitDir])
             // ensure infrastructure
             // strat harvest
             // claimer
@@ -30,10 +30,10 @@ function ensureSources(roomName)
         return bTree.FAIL;
 }
 
- /** @param {Room} room */
-function ensureNeutral(room)
+ /** @param {String} roomName */
+function ensureNeutral(roomName)
 {
-    if(room.controller !== undefined && room.controller.owner === undefined)
+    if(Memory.mapInfo[roomName].hasController && Memory.mapInfo[roomName].controller.owner === undefined)
         return bTree.SUCCESS;
     else
         return bTree.FAIL;

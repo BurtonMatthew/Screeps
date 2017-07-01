@@ -1,3 +1,4 @@
+let c = require('consts');
 let roleHarvester = require('role.harvester');
 let roleUpgrader = require('role.upgrader');
 let roleBuilder = require('role.builder');
@@ -40,59 +41,59 @@ module.exports.loop = function ()
     for(var i in Game.creeps) 
     {
         var creep = Game.creeps[i];
-        if(creep.memory.role == 'harvester')
+        if(creep.memory.role === 'harvester' || creep.memory.role === c.ROLE_HARVESTER)
         {
             roleHarvester.run(creep);
         }
-        else if(creep.memory.role == 'upgrader')
+        else if(creep.memory.role === 'upgrader' || creep.memory.role === c.ROLE_UPGRADER)
         {
             roleUpgrader.run(creep);
         }
-        else if(creep.memory.role == 'explorer')
+        else if(creep.memory.role === 'explorer' || creep.memory.role === c.ROLE_EXPLORER)
         {
             roleExplorer.run(creep);
         }
-        else if(creep.memory.role == 'builder')
+        else if(creep.memory.role === 'builder' || creep.memory.role === c.ROLE_BUILDER)
         {
             roleBuilder.run(creep);
         }
-        else if(creep.memory.role == 'fighter')
+        else if(creep.memory.role === 'fighter'|| creep.memory.role === c.ROLE_BUILDER)
         {
             roleFighter.run(creep);
         }
-        else if(creep.memory.role == "maintenance")
+        else if(creep.memory.role === "maintenance" || creep.memory.role == c.ROLE_REPAIRER)
         {
             roleMaintenance.run(creep);
         }
-        else if(creep.memory.role == "staticharvester")
+        else if(creep.memory.role == "staticharvester" || creep.memory.role == c.ROLE_STATIC_HARVESTER)
         {
             roleStaticHarvester.run(creep);
         }
-        else if(creep.memory.role == "expander")
+        else if(creep.memory.role == "expander" || creep.memory.role == c.ROLE_EXPANDER)
         {
             roleExpander.run(creep);
         }
-        else if(creep.memory.role == "truck")
+        else if(creep.memory.role == "truck" || creep.memory.role == c.ROLE_TRUCK)
         {
             roleTruck.run(creep);
         }
-        else if(creep.memory.role == "harasser")
+        else if(creep.memory.role == "harasser" || creep.memory.role == c.ROLE_HARASSER)
         {
             roleHarasser.run(creep);
         }
-        else if(creep.memory.role == "hauler")
+        else if(creep.memory.role == "hauler" || creep.memory.role == c.ROLE_HAULER)
         {
             roleHauler.run(creep);
         }
-        else if(creep.memory.role == "refiller")
+        else if(creep.memory.role == "refiller" || creep.memory.role == c.ROLE_REFILLER)
         {
             roleRefiller.run(creep);
         }
-        else if(creep.memory.role == "storagelink")
+        else if(creep.memory.role == "storagelink" || creep.memory.role == c.ROLE_STORAGE_LINK)
         {
             roleStorageLink.run(creep);
         }
-        else if(creep.memory.role == "scout")
+        else if(creep.memory.role == "scout" || creep.memory.role == c.ROLE_SCOUT)
         {
             roleScout.run(creep);
         }
