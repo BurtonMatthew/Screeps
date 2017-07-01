@@ -1,4 +1,5 @@
 var mapM = require('map.memory');
+let bTree = require('behaviourTree');
 var utils =
 {
     navToRoom: function(creep, targetRoom)
@@ -112,16 +113,6 @@ var utils =
                 getSpawnerFunc().createCreep(body, name+i, mem);
                 return true;
             }
-        }
-        return false;
-    },
-    
-    spawnStrategyArray: function(stratFunc, arr)
-    {
-        for(var i=0, len=arr.length; i<len; ++i)
-        {
-            if(stratFunc(arr[i]))
-                return true;
         }
         return false;
     },

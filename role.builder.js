@@ -56,7 +56,7 @@ var roleBuilder = {
             {
                 if(creep.build(target) == ERR_NOT_IN_RANGE) 
                 {
-                    creep.moveTo(target);
+                    creep.moveTo(target, {maxRooms:1});
                 }
             }
             else

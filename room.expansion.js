@@ -66,6 +66,7 @@ function ensureExplorers(room)
 }
 
 var roomExpansion = {
+    
     /** @param {Room} room **/
     run: function(room) 
     {
@@ -75,8 +76,8 @@ var roomExpansion = {
         bTree.sequence
         (
              _.partial(ensureBaseHarvesters, room)
-            ,_.partial(utils.spawnStrategyArray, strategyHarvest.spawn, sources)
-            ,_.partial(utils.spawnStrategyArray, strategyHarvest.spawn, minerals)
+            ,_.partial(bTree.sequenceArray, strategyHarvest.spawn, sources)
+            ,_.partial(bTree.sequenceArray, strategyHarvest.spawn, minerals)
             ,_.partial(strategyBuild.spawn, room)
             ,_.partial(ensureBaseMaintenances, room)
             ,_.partial(strategyUpgrade.spawn, room.controller)
