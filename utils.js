@@ -17,12 +17,11 @@ var utils =
         }
     },
     
+    /** @param {Creep} creep */
     fillEnergy: function(creep)
     {
         const dropped = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES, {filter: (rsc) => rsc.resourceType == RESOURCE_ENERGY && rsc.amount > 50 });
         const container = creep.pos.findClosestByRange(FIND_STRUCTURES, {filter: (struct) => struct.structureType == STRUCTURE_CONTAINER && struct.store[RESOURCE_ENERGY] > 50});
-        
-        
         
         if(creep.room.storage !== undefined && creep.room.storage.store[RESOURCE_ENERGY] > 0)
         {
@@ -66,6 +65,7 @@ var utils =
         return creep.carry.energy == creep.carryCapacity;
     },
     
+    /** @param {RoomPosition} room */
     getClosestSpawner: function(pos)
     {
         var closest = pos.findClosestByPath(FIND_MY_STRUCTURES, {ignoreCreeps: 1, filter: (struct) => struct.structureType == STRUCTURE_SPAWN});
@@ -78,11 +78,27 @@ var utils =
             return { createCreep: function(body,name,mem) { return ERR_BUSY; } }; //No avail spawner, but return spawn function so we can avoid null checks
     },
     
+    /** @param {Room} room */
     getAvailableSpawner: function(room)
     {
         const availSpawners = room.find(FIND_MY_STRUCTURES, {filter: (struct) => struct.structureType == STRUCTURE_SPAWN && struct.spawning === null} );
         if(availSpawners.length > 0)
             return availSpawners[0];
+        else
+            return { createCreep: function(body,name,mem) { return ERR_BUSY; } }; //No avail spawner, but return spawn function so we can avoid null checks
+    },
+
+    /** @param {String} roomName */
+    getCrossmapSpawner: function(roomName)
+    {
+        const spawner = _(Game.rooms)
+                            .filter(room => room.controller && room.controller.my)
+                            .sortBy(room => Game.map.findRoute(room, roomName).length)
+                            .map(room => room.find(FIND_MY_STRUCTURES, {filter: (struct) => struct.structureType == STRUCTURE_SPAWN && struct.spawning === null}))
+                            .flatten()
+                            .first();
+        if(spawner)
+            return spawner;
         else
             return { createCreep: function(body,name,mem) { return ERR_BUSY; } }; //No avail spawner, but return spawn function so we can avoid null checks
     },

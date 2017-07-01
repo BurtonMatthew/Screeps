@@ -8,11 +8,9 @@ var roleExplorer =
     /** @param {Creep} creep **/
     run: function(creep) 
     {
-        mapM.memorize(creep.room);
-        
-        //creep.memory.targetRoom = "W5N3";
         if(creep.memory.targetRoom === undefined || creep.room.name == creep.memory.targetRoom)
         {
+            mapM.memorize(creep.room);
             creep.memory.targetRoom = mapM.getStaleRoom();
         }
 

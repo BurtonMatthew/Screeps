@@ -1,5 +1,7 @@
+let utils = require('utils');
 let bTree = require('behaviourTree');
 
+ /** @param {String} roomName */
 function ensureVision(roomName)
 {
     return bTree.select
@@ -10,6 +12,7 @@ function ensureVision(roomName)
     );
 }
 
+ /** @param {String} roomName */
 function hasVision(roomName)
 {
     if(Game.rooms[roomName] !== undefined)
@@ -18,6 +21,7 @@ function hasVision(roomName)
         return bTree.FAIL;
 }
 
+ /** @param {String} roomName */
 function scoutObserver(roomName)
 {
     /** @type {StructureObserver[]} */
@@ -31,9 +35,18 @@ function scoutObserver(roomName)
     return bTree.FAIL;
 }
 
+ /** @param {String} roomName */
 function scoutCreep(roomName)
 {
-    return bTree.FAIL;
+    if(Game.creeps["Scout_" + roomName] === undefined)
+    {
+        if(utils.getCrossmapSpawner(roomName).createCreep([MOVE], "Scout_" + roomName, {role:"scout", home:roomName}) === OK)
+            return bTree.INPROGRESS;
+        else
+            return bTree.FAIL;
+    }
+    else
+        return bTree.INPROGRESS;
 }
 
 module.exports = {

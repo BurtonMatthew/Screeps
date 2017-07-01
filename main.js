@@ -1,17 +1,18 @@
-var roleHarvester = require('role.harvester');
-var roleUpgrader = require('role.upgrader');
-var roleBuilder = require('role.builder');
-var roleFighter = require('role.fighter');
-var roleMaintenance = require('role.maintenance');
-var roleExplorer = require('role.explorer');
-var roleStaticHarvester = require('role.staticHarvester');
-var roleExpander = require('role.expander');
-var roleTruck = require('role.truck');
-var roleHarasser = require('role.harasser');
-var roleHauler = require('role.hauler');
-var roleRefiller = require('role.refiller');
-var roleStorageLink = require('role.storageLink');
-var roomExpansion = require('room.expansion');
+let roleHarvester = require('role.harvester');
+let roleUpgrader = require('role.upgrader');
+let roleBuilder = require('role.builder');
+let roleFighter = require('role.fighter');
+let roleMaintenance = require('role.maintenance');
+let roleExplorer = require('role.explorer');
+let roleStaticHarvester = require('role.staticHarvester');
+let roleExpander = require('role.expander');
+let roleTruck = require('role.truck');
+let roleHarasser = require('role.harasser');
+let roleHauler = require('role.hauler');
+let roleRefiller = require('role.refiller');
+let roleStorageLink = require('role.storageLink');
+let roleScout = require('role.scout');
+let roomExpansion = require('room.expansion');
 let strategyKeeperRoom = require('strategy.keeperRoom');
 
 module.exports.loop = function () 
@@ -90,6 +91,10 @@ module.exports.loop = function ()
         else if(creep.memory.role == "storagelink")
         {
             roleStorageLink.run(creep);
+        }
+        else if(creep.memory.role == "scout")
+        {
+            roleScout.run(creep);
         }
     }
 }
