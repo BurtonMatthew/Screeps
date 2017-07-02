@@ -1,7 +1,7 @@
-var mapM = require('map.memory');
-var expansion = require('strategy.expansion');
-var utils = require('utils');
-var roomLayout = require('room.layout');
+let mapM = require('map.memory');
+let expansion = require('strategy.expansion');
+let utils = require('utils');
+let roomLayout = require('room.layout');
 
 var roleExplorer =
 {

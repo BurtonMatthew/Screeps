@@ -65,6 +65,46 @@ function flattenArray(arr)
     return newObj;
 }
 
+/** @param {Room} room */
+function memorize(room)
+{
+    var layout = {};
+    
+    const spawns = room.find(FIND_MY_STRUCTURES, {filter: (struct) => struct.structureType == STRUCTURE_SPAWN });
+    layout.spawns = flattenArray(_.map(spawns, (spawns) => spawns.pos));
+
+    const extensions = room.find(FIND_MY_STRUCTURES, {filter: (struct) => struct.structureType == STRUCTURE_EXTENSION });
+    layout.extensions = flattenArray(_.map(extensions, (ext) => ext.pos));
+
+    const containers = room.find(FIND_STRUCTURES, {filter: (struct) => struct.structureType == STRUCTURE_CONTAINER });
+    layout.containers = flattenArray(_.map(containers, (container) => container.pos));
+
+    const links = room.find(FIND_MY_STRUCTURES, {filter: (struct) => struct.structureType == STRUCTURE_LINK });
+    layout.links = flattenArray(_.map(links, (link) => link.pos));
+
+    const roads = room.find(FIND_STRUCTURES, {filter: (struct) => struct.structureType == STRUCTURE_ROAD });
+    layout.roads = flattenArray(_.map(roads, (road) => road.pos));
+
+    const walls = room.find(FIND_STRUCTURES, {filter: (struct) => struct.structureType == STRUCTURE_WALL });
+    layout.walls = flattenArray(_.map(walls, (wall) => wall.pos));
+
+    const ramparts = room.find(FIND_MY_STRUCTURES, {filter: (struct) => struct.structureType == STRUCTURE_RAMPART });
+    layout.ramparts = flattenArray(_.map(ramparts, (rampart) => rampart.pos));
+
+    const mines = room.find(FIND_STRUCTURES, {filter: (struct) => struct.structureType == STRUCTURE_EXTRACTOR });
+    layout.mines = flattenArray(_.map(mines, (mine) => mine.pos));
+
+    const towers = room.find(FIND_MY_STRUCTURES, {filter: (struct) => struct.structureType == STRUCTURE_TOWER });
+    layout.towers = flattenArray(_.map(towers, (tower) => tower.pos));
+
+    if(room.storage)
+        layout.storage = { x:room.storage.x, y:room.storage.y };
+    if(room.terminal)
+        layout.terminal = { x:room.terminal.x, y:room.terminal.y };
+
+    return layout;
+}
+
 function applyArray(room, arr, type)
 {
     if(arr === undefined)
@@ -493,6 +533,7 @@ function uniqueArray(arr)
 }
 module.exports = {
     visualize,
+    memorize,
     createBaseLayout,
     createRemoteHarvestLayout,
     apply

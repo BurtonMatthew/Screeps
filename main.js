@@ -15,6 +15,7 @@ let roleStorageLink = require('role.storageLink');
 let roleScout = require('role.scout');
 let roomExpansion = require('room.expansion');
 let strategyKeeperRoom = require('strategy.keeperRoom');
+let roomLayout = require('room.layout');
 
 module.exports.loop = function () 
 {
@@ -29,7 +30,10 @@ module.exports.loop = function ()
     {
         var room = Game.rooms[name];
         if(room.controller !== undefined && room.controller.my)
+        {
             roomExpansion.run(room);
+            //roomLayout.visualize(room, roomLayout.memorize(room));
+        }
 
         //if("layout" in room.memory)
         //    delete room.memory.layout;
