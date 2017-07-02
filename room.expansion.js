@@ -85,30 +85,6 @@ var roomExpansion = {
             ,_.partial(ensureExplorers, room)
             ,_.partial(strategyHarvestRemote.ensureRemoteHarvest, room)
         );
-        
-        if("layout" in room.memory)
-        {
-            if(room.memory.lastApply === undefined || room.memory.lastApply + 2000 < Game.time)
-            {
-                roomLayout.apply(room, room.memory.layout);
-                room.memory.lastApply = Game.time;
-            }
-            
-            try
-            {
-                if(room.name == "W1N3")
-                {
-                    //roomLayout.visualize(roomLayout.createLayout(room));
-                    //roomLayout.visualize(room.memory.layout);
-                    //room.memory.layout = roomLayout.createLayout(room);
-                }
-            }
-            catch(err) { console.log(err); }
-        }
-        else if(room.name == "W1N3")
-        {
-            //room.memory.layout = roomLayout.createLayout(room);
-        }
             
         const hostiles = room.find(FIND_HOSTILE_CREEPS);
         const towers = room.find(FIND_MY_STRUCTURES, {filter: (structure) => { return structure.structureType == STRUCTURE_TOWER; }});

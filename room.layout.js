@@ -14,7 +14,8 @@ function visualize(layout)
 
 function apply(room, layout)
 {
-    room.createConstructionSite(new RoomPosition(layout.storage.x, layout.storage.y, layout.storage.roomName), STRUCTURE_STORAGE);
+    if(layout.storage)
+        room.createConstructionSite(new RoomPosition(layout.storage.x, layout.storage.y, layout.storage.roomName), STRUCTURE_STORAGE);
     applyArray(room, layout.spawns, STRUCTURE_SPAWN);
     applyArray(room, layout.extensions, STRUCTURE_EXTENSION);
     applyArray(room, layout.containers, STRUCTURE_CONTAINER);
@@ -29,6 +30,9 @@ function apply(room, layout)
 
 function applyArray(room, arr, type)
 {
+    if(arr === undefined)
+        return;
+
     for(var i=0, len=arr.length; i<len; ++i)
     {
         const pos = new RoomPosition(arr[i].x, arr[i].y, arr[i].roomName);
@@ -38,11 +42,17 @@ function applyArray(room, arr, type)
 
 function visualizePosSquare(pos, colour)
 {
+    if(pos === undefined)
+        return;
+
     new RoomVisual(pos.roomName).rect(pos.x - 0.25, pos.y - 0.25, 0.5, 0.5, {fill: colour, stroke: "#000000"});
 }
 
 function visualizeArrayCircles(arr, colour)
 {
+    if(arr === undefined)
+        return;
+
     for(var i=0, len=arr.length; i<len; ++i)
     {
         new RoomVisual(arr[i].roomName).circle(arr[i], { radius: .25, fill: colour});
@@ -51,12 +61,16 @@ function visualizeArrayCircles(arr, colour)
 
 function visualizeArraySquares(arr, colour)
 {
+    if(arr === undefined)
+        return;
+
     for(var i=0, len=arr.length; i<len; ++i)
     {
         new RoomVisual(arr[i].roomName).rect(arr[i].x - 0.25, arr[i].y - 0.25, 0.5, 0.5, {fill: colour, stroke: "#000000"});
     }
 }
 
+/** @param {Room} room */
 function createBaseLayout(room)
 {
     var layout = {};
@@ -270,6 +284,71 @@ function createBaseLayout(room)
     return layout;
 }
 
+/** @param {Room} sourceRoom */
+/** @param {Room} destRoom */
+function createRemoteHarvestLayout(sourceRoom, destRoom)
+{
+    var layout = {};
+    layout.roads = [];
+    layout.containers = [];
+
+    const sources = destRoom.find(FIND_SOURCES);
+    for(var i=0, len = sources.length; i<len; ++i)
+    {
+        var startPos;
+        //if(findEmptyAdj(sourceRoom, sourceRoom.controller.pos.x, sourceRoom.controller.pos.y, []) !== null)
+        //    startPos = sourceRoom.controller.pos;
+        //else
+            startPos = sourceRoom.find(FIND_MY_STRUCTURES, {filter: (struct) => struct.structureType === STRUCTURE_SPAWN})[0].pos;
+            //console.log("hi");
+
+        const pathInfo = PathFinder.search(startPos, {pos: sources[i].pos, range:1},
+        {
+            plainCost: 3,
+            swampCost: 3,
+            maxCost: Infinity,
+            maxOps: 20000,
+            roomCallback: function(roomName)
+            {
+                let room = Game.rooms[roomName];
+                if (!room) return;
+                let costs = new PathFinder.CostMatrix;
+                room.find(FIND_STRUCTURES).forEach(
+                    function(struct) 
+                    {
+                        if (struct.structureType === STRUCTURE_ROAD) 
+                        {
+                            // Favor roads over plain tiles
+                            if(roomName == sourceRoom.name)
+                                costs.set(struct.pos.x, struct.pos.y, 0);
+                            else
+                                costs.set(struct.pos.x, struct.pos.y, 1);
+                        } 
+                        else if (struct.structureType !== STRUCTURE_CONTAINER &&
+                                (struct.structureType !== STRUCTURE_RAMPART || !struct.my)) 
+                        {
+                            // Can't walk through non-walkable buildings
+                            costs.set(struct.pos.x, struct.pos.y, 0xff);
+                        }
+                    });
+
+                if(roomName === destRoom.name)
+                    layout.roads.forEach((pos) => costs.set(pos.x, pos.y, 1));
+            
+                return costs;
+            }
+        });
+
+        layout.roads = layout.roads.concat(_.filter(pathInfo.path, (pos) => pos.roomName === destRoom.name));
+        if(pathInfo.path.length > 0)
+            layout.containers.push(_.last(pathInfo.path));
+    }
+
+    layout.roads = uniqueArray(layout.roads);
+
+    return layout;
+}
+
 function findEmptyAdj(room, x, y, used)
 {
     const tiles = room.lookForAtArea(LOOK_TERRAIN, y-1, x-1, y+1, x+1, true);
@@ -281,6 +360,8 @@ function findEmptyAdj(room, x, y, used)
             return startPos;
         }
     }
+
+    return null;
 }
 
 function findAllEmptyAdj(room, x, y, used)
@@ -376,5 +457,6 @@ function uniqueArray(arr)
 module.exports = {
     visualize,
     createBaseLayout,
+    createRemoteHarvestLayout,
     apply
 };

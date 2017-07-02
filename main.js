@@ -24,12 +24,42 @@ module.exports.loop = function ()
             delete Memory.creeps[name];
         }
     }
-    
+
     for(var name in Game.rooms)
     {
         var room = Game.rooms[name];
         if(room.controller !== undefined && room.controller.my)
             roomExpansion.run(room);
+
+        //if("layout" in room.memory)
+        //    delete room.memory.layout;
+        //if("lastApply" in room.memory)
+        //    delete room.memory.lastApply;
+/*
+        if("layout" in room.memory)
+        {
+            if(room.memory.lastApply === undefined || room.memory.lastApply + 2000 < Game.time)
+            {
+                roomLayout.apply(room, room.memory.layout);
+                room.memory.lastApply = Game.time;
+            }
+            
+            try
+            {
+                if(room.name == "W1N3")
+                {
+                    //roomLayout.visualize(roomLayout.createLayout(room));
+                    //roomLayout.visualize(room.memory.layout);
+                    //room.memory.layout = roomLayout.createLayout(room);
+                }
+            }
+            catch(err) { console.log(err); }
+        }
+        else if(room.name == "W1N3")
+        {
+            //room.memory.layout = roomLayout.createLayout(room);
+        }
+        */
     }
     
     for(var name in Game.flags)
