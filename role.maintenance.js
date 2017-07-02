@@ -36,9 +36,9 @@ var roleMaintenance = {
                 
                 if(!maintTarget)
                 {
-                    maintTarget = creep.memory.target = creep.pos.findClosestByRange(FIND_STRUCTURES, {
+                    maintTarget = creep.pos.findClosestByRange(FIND_STRUCTURES, {
                         filter: (structure) => {
-                            return structure.hits < structure.hitsMax * .95 
+                            return structure.hits < structure.hitsMax * .05 
                             && structure.structureType == STRUCTURE_RAMPART;
                         }
                     });
@@ -46,9 +46,9 @@ var roleMaintenance = {
                 
                 if(!maintTarget)
                 {
-                    maintTarget = creep.memory.target = creep.pos.findClosestByRange(FIND_STRUCTURES, {
-                        filter: (structure) => { return structure.hits < structure.hitsMax; }
-                    });
+                    maintTarget = _(creep.room.find(FIND_STRUCTURES))
+                                    .sortBy((struct) => struct.hits / struct.hitsMax)
+                                    .first();
                 }
                 
                 if(maintTarget)
