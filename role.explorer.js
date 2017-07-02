@@ -19,11 +19,11 @@ var roleExplorer =
         //console.log(expansion.getBestExpansionRoom());
         try
         {
-            //roomLayout.visualize(roomLayout.createLayout(creep.room));
+            //roomLayout.visualize(creep.room, roomLayout.createBaseLayout(creep.room));
         }
         catch(err)
         {
-            
+            console.log(err);
         }
         
     }

@@ -1,21 +1,24 @@
-function visualize(layout)
+function visualize(room, layout)
 {
-    visualizePosSquare(layout.storage, "#00ff00");
-    visualizeArrayCircles(layout.containers, "#00ff00");
-    visualizeArrayCircles(layout.links, "#0000ff");
-    visualizeArrayCircles(layout.roads, "#000000");
-    visualizeArraySquares(layout.walls, "#ff0000");
-    visualizeArrayCircles(layout.ramparts, "#ffffff");
-    visualizeArraySquares(layout.spawns, "#ffff00");
-    visualizeArrayCircles(layout.mines, "#00ffff");
-    visualizeArrayCircles(layout.extensions, "#ff00ff");
-    visualizeArraySquares(layout.towers, "#ff00ff");
+    visualizePosSquare(room, layout.storage, "#00ff00");
+    visualizePosSquare(room, layout.terminal, "#ffffff");
+    visualizeArrayCircles(room, layout.containers, "#00ff00");
+    visualizeArrayCircles(room, layout.links, "#0000ff");
+    visualizeArrayCircles(room, layout.roads, "#000000");
+    visualizeArraySquares(room, layout.walls, "#ff0000");
+    visualizeArrayCircles(room, layout.ramparts, "#ffffff");
+    visualizeArraySquares(room, layout.spawns, "#ffff00");
+    visualizeArrayCircles(room, layout.mines, "#00ffff");
+    visualizeArrayCircles(room, layout.extensions, "#ff00ff");
+    visualizeArraySquares(room, layout.towers, "#ff00ff");
 }
 
 function apply(room, layout)
 {
     if(layout.storage)
-        room.createConstructionSite(new RoomPosition(layout.storage.x, layout.storage.y, layout.storage.roomName), STRUCTURE_STORAGE);
+        room.createConstructionSite(new RoomPosition(layout.storage.x, layout.storage.y, room.name), STRUCTURE_STORAGE);
+    if(layout.terminal)
+        room.createConstructionSite(new RoomPosition(layout.terminal.x, layout.terminal.y, room.name), STRUCTURE_TERMINAL);
     applyArray(room, layout.spawns, STRUCTURE_SPAWN);
     applyArray(room, layout.extensions, STRUCTURE_EXTENSION);
     applyArray(room, layout.containers, STRUCTURE_CONTAINER);
@@ -28,45 +31,79 @@ function apply(room, layout)
     applyArray(room, layout.towers, STRUCTURE_TOWER);
 }
 
+function flattenLayout(layout)
+{
+    layout.spawns = flattenArray(layout.spawns);
+    layout.extensions = flattenArray(layout.extensions);
+    layout.containers = flattenArray(layout.containers);
+    layout.links = flattenArray(layout.links);
+    layout.roads = flattenArray(layout.roads);
+    layout.walls = flattenArray(layout.walls);
+    layout.ramparts = flattenArray(layout.ramparts);
+    layout.mines = flattenArray(layout.mines);
+    layout.towers = flattenArray(layout.towers);
+    return layout;
+}
+
+function flattenArray(arr)
+{
+    var newObj = {};
+
+    if(arr !== undefined)
+    {
+        newObj.count = arr.length;
+        newObj.x = new Array(arr.length);
+        newObj.y = new Array(arr.length);
+
+        for(var i=0; i<newObj.count; ++i)
+        {
+            newObj.x[i] = arr[i].x;
+            newObj.y[i] = arr[i].y;
+        }
+    }
+
+    return newObj;
+}
+
 function applyArray(room, arr, type)
 {
     if(arr === undefined)
         return;
 
-    for(var i=0, len=arr.length; i<len; ++i)
+    for(var i=0, len=arr.count; i<len; ++i)
     {
-        const pos = new RoomPosition(arr[i].x, arr[i].y, arr[i].roomName);
+        const pos = new RoomPosition(arr.x[i], arr.y[i], room.name);
         room.createConstructionSite(pos, type);
     }
 }
 
-function visualizePosSquare(pos, colour)
+function visualizePosSquare(room, pos, colour)
 {
     if(pos === undefined)
         return;
 
-    new RoomVisual(pos.roomName).rect(pos.x - 0.25, pos.y - 0.25, 0.5, 0.5, {fill: colour, stroke: "#000000"});
+    new RoomVisual(room.name).rect(pos.x - 0.25, pos.y - 0.25, 0.5, 0.5, {fill: colour, stroke: "#000000"});
 }
 
-function visualizeArrayCircles(arr, colour)
+function visualizeArrayCircles(room, arr, colour)
 {
     if(arr === undefined)
         return;
 
-    for(var i=0, len=arr.length; i<len; ++i)
+    for(var i=0, len=arr.count; i<len; ++i)
     {
-        new RoomVisual(arr[i].roomName).circle(arr[i], { radius: .25, fill: colour});
+        new RoomVisual(room.name).circle(arr.x[i], arr.y[i], { radius: .25, fill: colour});
     }
 }
 
-function visualizeArraySquares(arr, colour)
+function visualizeArraySquares(room, arr, colour)
 {
     if(arr === undefined)
         return;
 
-    for(var i=0, len=arr.length; i<len; ++i)
+    for(var i=0, len=arr.count; i<len; ++i)
     {
-        new RoomVisual(arr[i].roomName).rect(arr[i].x - 0.25, arr[i].y - 0.25, 0.5, 0.5, {fill: colour, stroke: "#000000"});
+        new RoomVisual(room.name).rect(arr.x[i] - 0.25, arr.y[i] - 0.25, 0.5, 0.5, {fill: colour, stroke: "#000000"});
     }
 }
 
@@ -75,7 +112,6 @@ function createBaseLayout(room)
 {
     var layout = {};
     var usedPositions = [];
-    //room.lookAtArea(0, 0, 49, 49);
     
     // Cant build next to exits
     var exitPts = [];
@@ -215,7 +251,7 @@ function createBaseLayout(room)
     var sitesToExamine = [layout.storage];
     var acceptedSites = [];
     var i = 0;
-    while(acceptedSites.length < 66 && i<sitesToExamine.length)
+    while(acceptedSites.length < 67 && i<sitesToExamine.length)
     {
         const ePos = sitesToExamine[i];
         if(room.lookForAt(LOOK_TERRAIN, ePos) != "wall" && !_.any(exitAdjAdj, ePos))
@@ -277,11 +313,12 @@ function createBaseLayout(room)
     
     layout.extensions = acceptedSites.slice(0,60);
     layout.towers = acceptedSites.slice(60,66);
+    layout.terminal = { x:acceptedSites[66].x, y:acceptedSites[66].y };
     
     layout.roads = uniqueArray(layout.roads);
     
     
-    return layout;
+    return flattenLayout(layout);
 }
 
 /** @param {Room} sourceRoom */
@@ -346,7 +383,7 @@ function createRemoteHarvestLayout(sourceRoom, destRoom)
 
     layout.roads = uniqueArray(layout.roads);
 
-    return layout;
+    return flattenLayout(layout);
 }
 
 function findEmptyAdj(room, x, y, used)
