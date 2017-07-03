@@ -16,6 +16,7 @@ function ensureRemoteHarvest(room)
              _.partial(ensureSources, exits[exitDir])
             ,_.partial(ensureNeutral, exits[exitDir]) // Todo switch for dealing with source keepers
             ,_.partial(strategyScout.ensureVision, exits[exitDir])
+            ,_.partial(ensureDefenses, exits[exitDir])
             ,_.partial(reserveController, exits[exitDir])            
             ,_.partial(ensureInfrastructure, room.name, exits[exitDir])
             ,_.partial(spawnHarvesters, room, exits[exitDir])
@@ -106,6 +107,18 @@ function reserveController(roomName)
 function spawnHarvesters(homeRoom, roomName)
 {
     return bTree.sequenceArray(_.partialRight(strategyHarvest.spawn,homeRoom),Game.rooms[roomName].find(FIND_SOURCES));
+}
+
+ /** @param {String} roomName */
+function ensureDefenses(roomName)
+{
+    const room = Game.rooms[roomName];
+    if(Game.creeps["Fighter" + roomName] === undefined && room.find(FIND_HOSTILE_CREEPS).length > 0 )
+    {
+        utils.getCrossmapSpawner(roomName).createCreep([TOUGH,TOUGH,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK], "Fighter" + roomName, {role:c.ROLE_FIGHTER, home:roomName});
+    }
+
+    return bTree.SUCCESS;
 }
 
 module.exports = {
