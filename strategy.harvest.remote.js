@@ -1,7 +1,9 @@
+let c = require('consts');
 let utils = require('utils');
 let bTree = require('behaviourTree');
 let strategyScout = require('strategy.scout');
 let roomLayout = require('room.layout');
+let strategyHarvest = require('strategy.harvest');
 
  /** @param {Room} room */
 function ensureRemoteHarvest(room)
@@ -11,12 +13,12 @@ function ensureRemoteHarvest(room)
     {
         bTree.sequence
         (
-            // _.partial(ensureSources, exits[exitDir])
-            //,_.partial(ensureNeutral, exits[exitDir]) // Todo switch for dealing with source keepers
-            //,_.partial(strategyScout.ensureVision, exits[exitDir])
-            //,_.partial(ensureInfrastructure, room.name, exits[exitDir])
-            // strat harvest
-            // claimer
+             _.partial(ensureSources, exits[exitDir])
+            ,_.partial(ensureNeutral, exits[exitDir]) // Todo switch for dealing with source keepers
+            ,_.partial(strategyScout.ensureVision, exits[exitDir])
+            ,_.partial(reserveController, exits[exitDir])            
+            ,_.partial(ensureInfrastructure, room.name, exits[exitDir])
+            ,_.partial(spawnHarvesters, room, exits[exitDir])
         );
     }
     return bTree.SUCCESS;
@@ -54,17 +56,57 @@ function ensureInfrastructure(sourceRoomName, destRoomName)
         return bTree.INPROGRESS;
     }
 
+    if(Game.creeps["Maintenance_" + destRoomName] === undefined 
+        && destRoom.find(FIND_STRUCTURES, {filter: (struct) => struct.hits < struct.hitsMax * .7}).length > 0)
+    {
+        utils.getCrossmapSpawner(destRoomName).createCreep([MOVE, MOVE, CARRY, CARRY, WORK, WORK]
+            , "Maintenance_" + destRoomName
+            , { role: 'maintenance', full: false, home: destRoomName });
+    }
+
     if(destRoom.find(FIND_MY_CONSTRUCTION_SITES).length == 0)
     {
         return bTree.SUCCESS;
     }
     else
     {
-        return bTree.INPROGRESS;
+        utils.spawnToCount
+        (
+            _.partial(utils.getCrossmapSpawner, destRoomName)
+            , 1
+            , [MOVE, MOVE, WORK, WORK, WORK, WORK, CARRY, CARRY]
+            , "Builder_" + destRoomName + "_"
+            , {role: c.ROLE_BUILDER, home:destRoomName}
+        );
+            return bTree.INPROGRESS;
     }
-
 }
 
+ /** @param {String} roomName */
+function reserveController(roomName)
+{
+    const room = Game.rooms[roomName];
+    if(!room.controller || (room.controller.reservation.username === "Glenstorm" && room.controller.reservation.ticksToEnd > 3000))
+        return bTree.SUCCESS;
+
+    if(Game.creeps["Reserve_" + roomName] === undefined)
+    {
+        if(utils.getCrossmapSpawner(roomName).createCreep([MOVE, MOVE, CLAIM, CLAIM], "Reserve_" + roomName, {role:c.ROLE_RESERVER, home:roomName}) === OK)
+            return bTree.INPROGRESS;
+        else
+            return bTree.FAIL;
+    }
+    else
+        return bTree.SUCCESS;
+}
+
+ /** @param {Room} homeRoom
+  *  @param {String} roomName
+  */
+function spawnHarvesters(homeRoom, roomName)
+{
+    return bTree.sequenceArray(_.partialRight(strategyHarvest.spawn,homeRoom),Game.rooms[roomName].find(FIND_SOURCES));
+}
 
 module.exports = {
     ensureRemoteHarvest

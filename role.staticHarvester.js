@@ -3,7 +3,8 @@ let utils = require('utils');
 var roleStaticHarvester = {
 
     /** @param {Creep} creep **/
-    run: function(creep) {
+    run: function(creep) 
+    {
         var didMove = false;
         if(utils.checkSwaps(creep))
         {
@@ -28,10 +29,14 @@ var roleStaticHarvester = {
         else
         {
             const source = Game.getObjectById(creep.memory.sourceId);
-            if(creep.memory.standX !== undefined && (creep.pos.x != creep.memory.standX || creep.pos.y != creep.memory.standY) && !didMove)
+            if(creep.memory.standX !== undefined 
+                && (creep.pos.x != creep.memory.standX 
+                    || creep.pos.y != creep.memory.standY 
+                    || creep.pos.roomName != creep.memory.standRoom) 
+                && !didMove)
             {
                 //creep.moveTo(creep.memory.standX, creep.memory.standY);
-                didMove = utils.moveTo(creep, new RoomPosition(creep.memory.standX, creep.memory.standY, creep.room.name)) == OK;
+                didMove = utils.moveTo(creep, new RoomPosition(creep.memory.standX, creep.memory.standY, creep.memory.standRoom)) == OK;
             }
             const harvestError = creep.harvest(source)
             if(harvestError == ERR_NOT_IN_RANGE && !didMove) 

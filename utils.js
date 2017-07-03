@@ -2,6 +2,9 @@ var mapM = require('map.memory');
 let bTree = require('behaviourTree');
 var utils =
 {
+    /** @param {Creep} creep
+     *  @param {String} targetRoom
+     */
     navToRoom: function(creep, targetRoom)
     {
         const route = Game.map.findRoute(creep.room, targetRoom, {
@@ -138,7 +141,7 @@ var utils =
         {
             const pathInfo = PathFinder.search(creep.pos, {pos: dest, range: opts.range}, 
             {
-                maxRooms:1,
+                maxRooms:2,
                 plainCost:2,
                 swampCost:10,
                 roomCallback: function(roomName)

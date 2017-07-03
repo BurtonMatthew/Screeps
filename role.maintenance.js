@@ -18,7 +18,7 @@ var roleMaintenance = {
             {
                 if(creep.repair(target) == ERR_NOT_IN_RANGE) 
                 {
-                    creep.moveTo(target);
+                    creep.moveTo(target, {maxRooms:1});
                 }
                 else if(target.hits == target.hitsMax)
                 {
@@ -47,7 +47,7 @@ var roleMaintenance = {
                 if(!maintTarget)
                 {
                     maintTarget = _(creep.room.find(FIND_STRUCTURES))
-                                    .sortBy((struct) => struct.hits / struct.hitsMax)
+                                    .sortBy((struct) => (struct.hits / struct.hitsMax))
                                     .first();
                 }
                 

@@ -15,10 +15,10 @@ function visualize(room, layout)
 
 function apply(room, layout)
 {
-    if(layout.storage)
-        room.createConstructionSite(new RoomPosition(layout.storage.x, layout.storage.y, room.name), STRUCTURE_STORAGE);
-    if(layout.terminal)
-        room.createConstructionSite(new RoomPosition(layout.terminal.x, layout.terminal.y, room.name), STRUCTURE_TERMINAL);
+    //if(layout.storage)
+    //    room.createConstructionSite(new RoomPosition(layout.storage.x, layout.storage.y, room.name), STRUCTURE_STORAGE);
+    //if(layout.terminal)
+    //    room.createConstructionSite(new RoomPosition(layout.terminal.x, layout.terminal.y, room.name), STRUCTURE_TERMINAL);
     applyArray(room, layout.spawns, STRUCTURE_SPAWN);
     applyArray(room, layout.extensions, STRUCTURE_EXTENSION);
     applyArray(room, layout.containers, STRUCTURE_CONTAINER);

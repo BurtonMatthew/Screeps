@@ -13,6 +13,7 @@ let roleHauler = require('role.hauler');
 let roleRefiller = require('role.refiller');
 let roleStorageLink = require('role.storageLink');
 let roleScout = require('role.scout');
+let roleReserver = require('role.reserver');
 let roomExpansion = require('room.expansion');
 let strategyKeeperRoom = require('strategy.keeperRoom');
 let roomLayout = require('room.layout');
@@ -32,14 +33,8 @@ module.exports.loop = function ()
         if(room.controller !== undefined && room.controller.my)
         {
             roomExpansion.run(room);
-            //roomLayout.visualize(room, roomLayout.memorize(room));
         }
 
-        //if("layout" in room.memory)
-        //    delete room.memory.layout;
-        //if("lastApply" in room.memory)
-        //    delete room.memory.lastApply;
-/*
         if("layout" in room.memory)
         {
             if(room.memory.lastApply === undefined || room.memory.lastApply + 2000 < Game.time)
@@ -47,23 +42,7 @@ module.exports.loop = function ()
                 roomLayout.apply(room, room.memory.layout);
                 room.memory.lastApply = Game.time;
             }
-            
-            try
-            {
-                if(room.name == "W1N3")
-                {
-                    //roomLayout.visualize(roomLayout.createLayout(room));
-                    //roomLayout.visualize(room.memory.layout);
-                    //room.memory.layout = roomLayout.createLayout(room);
-                }
-            }
-            catch(err) { console.log(err); }
         }
-        else if(room.name == "W1N3")
-        {
-            //room.memory.layout = roomLayout.createLayout(room);
-        }
-        */
     }
     
     for(var name in Game.flags)
@@ -130,6 +109,10 @@ module.exports.loop = function ()
         else if(creep.memory.role == "scout" || creep.memory.role == c.ROLE_SCOUT)
         {
             roleScout.run(creep);
+        }
+        else if(creep.memory.role === c.ROLE_RESERVER)
+        {
+            roleReserver.run(creep);
         }
     }
 }
