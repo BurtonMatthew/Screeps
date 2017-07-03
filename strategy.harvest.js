@@ -121,12 +121,13 @@ function getBodyPartsHarvester(source, spawnRoom, hasLink, isMineral)
 function getBodyPartsHauler(source, spawnRoom, isMineral)
 {
     var parts = [];
-    const maxAffordableParts = Math.floor(spawnRoom.energyCapacityAvailable  / 100);
-    const maxUsefulParts = isMineral ? 2 : 8;
+    const maxAffordableParts = Math.floor(spawnRoom.energyCapacityAvailable  / 150);
+    const maxUsefulParts = isMineral ? 2 : 5;
     const numPart = Math.min(maxAffordableParts, maxUsefulParts);
     for(var i=0; i<numPart; ++i)
     {
         parts.push(MOVE);
+        parts.push(CARRY);
         parts.push(CARRY);
     }
         

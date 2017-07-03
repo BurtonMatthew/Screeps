@@ -70,7 +70,7 @@ module.exports.loop = function ()
         {
             roleBuilder.run(creep);
         }
-        else if(creep.memory.role === 'fighter'|| creep.memory.role === c.ROLE_BUILDER)
+        else if(creep.memory.role === 'fighter'|| creep.memory.role === c.ROLE_FIGHTER)
         {
             roleFighter.run(creep);
         }

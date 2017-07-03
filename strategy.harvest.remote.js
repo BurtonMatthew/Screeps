@@ -75,7 +75,7 @@ function ensureInfrastructure(sourceRoomName, destRoomName)
         (
             _.partial(utils.getCrossmapSpawner, destRoomName)
             , 1
-            , [MOVE, MOVE, WORK, WORK, WORK, WORK, CARRY, CARRY]
+            , [MOVE, MOVE, MOVE, WORK, WORK, WORK, WORK, CARRY, CARRY]
             , "Builder_" + destRoomName + "_"
             , {role: c.ROLE_BUILDER, home:destRoomName}
         );
