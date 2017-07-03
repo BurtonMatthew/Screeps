@@ -102,7 +102,13 @@ function getBodyPartsHarvester(source, spawnRoom, hasLink, isMineral)
 {
     const maxAffordableWorkParts = Math.floor((spawnRoom.energyCapacityAvailable - (hasLink ? 100 : 50) - (source.room !== spawnRoom ? 100 : 0)) / 100);
     const maxWorkParts = isMineral ?  10 : (Math.ceil(source.energyCapacity / 600)); // /600 derived from 300 regen ticks, 2 per part per tick
-    var parts = [MOVE];
+    var parts = [];
+    
+    const numWork = Math.min(maxAffordableWorkParts, maxWorkParts);
+    for(var i=0; i<numWork; ++i)
+        parts.push(WORK);
+
+    parts.push(MOVE);
     if(hasLink)
         parts.push(CARRY);
     if(source.room !== spawnRoom)
@@ -110,10 +116,6 @@ function getBodyPartsHarvester(source, spawnRoom, hasLink, isMineral)
         parts.push(MOVE);
         parts.push(MOVE);
     }
-    
-    const numWork = Math.min(maxAffordableWorkParts, maxWorkParts);
-    for(var i=0; i<numWork; ++i)
-        parts.push(WORK);
         
     return parts;
 }
@@ -122,13 +124,13 @@ function getBodyPartsHauler(source, spawnRoom, isMineral)
 {
     var parts = [];
     const maxAffordableParts = Math.floor(spawnRoom.energyCapacityAvailable  / 150);
-    const maxUsefulParts = isMineral ? 2 : 5;
+    const maxUsefulParts = isMineral ? 1 : 5;
     const numPart = Math.min(maxAffordableParts, maxUsefulParts);
     for(var i=0; i<numPart; ++i)
     {
+        parts.push(CARRY);
+        parts.push(CARRY);
         parts.push(MOVE);
-        parts.push(CARRY);
-        parts.push(CARRY);
     }
         
     return parts;

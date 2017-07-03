@@ -15,4 +15,5 @@ module.exports =
     ,ROLE_STORAGE_LINK:12
     ,ROLE_SCOUT:13
     ,ROLE_RESERVER:14
+    ,ROLE_TERMINAL_DUMPER:15
 };

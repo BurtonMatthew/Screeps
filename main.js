@@ -14,6 +14,7 @@ let roleRefiller = require('role.refiller');
 let roleStorageLink = require('role.storageLink');
 let roleScout = require('role.scout');
 let roleReserver = require('role.reserver');
+let roleTerminalDumper = require('role.terminalDumper');
 let roomExpansion = require('room.expansion');
 let strategyKeeperRoom = require('strategy.keeperRoom');
 let roomLayout = require('room.layout');
@@ -113,6 +114,10 @@ module.exports.loop = function ()
         else if(creep.memory.role === c.ROLE_RESERVER)
         {
             roleReserver.run(creep);
+        }
+        else if(creep.memory.role === c.ROLE_TERMINAL_DUMPER)
+        {
+            roleTerminalDumper.run(creep);
         }
     }
 }

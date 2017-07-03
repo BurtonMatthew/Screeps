@@ -58,7 +58,7 @@ function ensureInfrastructure(sourceRoomName, destRoomName)
     }
 
     if(Game.creeps["Maintenance_" + destRoomName] === undefined 
-        && destRoom.find(FIND_STRUCTURES, {filter: (struct) => struct.hits < struct.hitsMax * .7}).length > 0)
+        /*&& destRoom.find(FIND_STRUCTURES, {filter: (struct) => struct.hits < struct.hitsMax * .7}).length > 0*/)
     {
         utils.getCrossmapSpawner(destRoomName).createCreep([MOVE, MOVE, CARRY, CARRY, WORK, WORK]
             , "Maintenance_" + destRoomName
@@ -115,7 +115,7 @@ function ensureDefenses(roomName)
     const room = Game.rooms[roomName];
     if(Game.creeps["Fighter" + roomName] === undefined && room.find(FIND_HOSTILE_CREEPS).length > 0 )
     {
-        utils.getCrossmapSpawner(roomName).createCreep([TOUGH,TOUGH,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK], "Fighter" + roomName, {role:c.ROLE_FIGHTER, home:roomName});
+        utils.getCrossmapSpawner(roomName).createCreep([TOUGH,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK], "Fighter" + roomName, {role:c.ROLE_FIGHTER, home:roomName});
     }
 
     return bTree.SUCCESS;

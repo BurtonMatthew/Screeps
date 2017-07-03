@@ -192,8 +192,7 @@ function continguousScore(roomName)
 function sourceKeeperAdjacentScore(roomName)
 {
     const myRoomsAdj = _(Game.rooms).filter(room => room.controller && room.controller.my)
-                                 .map(room => room.name)
-                                 .map(roomName => _.values(Game.map.describeExits(roomName)))
+                                 .map(room => _.values(Game.map.describeExits(room.name)))
                                  .flatten()
                                  .value();
 

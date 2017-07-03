@@ -1,3 +1,4 @@
+let c = require('consts');
 let utils = require('utils');
 let roomLayout = require('room.layout');
 let strategyHarvest = require('strategy.harvest');
@@ -65,6 +66,17 @@ function ensureExplorers(room)
     return bTree.SUCCESS;
 }
 
+function dumpToTerm(room)
+{
+    if(Game.creeps["STORE_" +room.name] === undefined
+        && room.storage && _.sum(room.storage.store) - room.storage.store[RESOURCE_ENERGY] > 50000)
+    {
+        utils.getAvailableSpawner(room).createCreep([MOVE,MOVE,MOVE,CARRY,CARRY,CARRY,CARRY,CARRY,CARRY], "STORE_" + room.name, {role:c.ROLE_TERMINAL_DUMPER, full:false});
+    }
+
+    return bTree.SUCCESS;
+}
+
 var roomExpansion = {
     
     /** @param {Room} room **/
@@ -83,6 +95,7 @@ var roomExpansion = {
             ,_.partial(strategyUpgrade.spawn, room.controller)
             ,_.partial(strategyExpansion.spawn, room)
             ,_.partial(ensureExplorers, room)
+            ,_.partial(dumpToTerm, room)
             ,_.partial(strategyHarvestRemote.ensureRemoteHarvest, room)
         );
             
@@ -131,6 +144,20 @@ var roomExpansion = {
                     break;
                 }
             }
+        }
+
+        if(room.terminal && room.terminal.cooldown === 0)
+        {
+            const maxRsc = _(room.terminal.store)
+                                .keys()
+                                .filter((key) => key !== RESOURCE_ENERGY)
+                                .max((key) => room.terminal.store[key]);
+
+            const orders = Game.market.getAllOrders((ord) => ord.resourceType === maxRsc && ord.type === ORDER_BUY && ord.price >= 1);
+            // Todo sort
+            if(orders.length > 0)
+                Game.market.deal(orders[0].id, room.terminal.store[maxRsc], room.name);
+
         }
     }
 }
