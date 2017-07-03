@@ -18,8 +18,8 @@ function ensureRemoteHarvest(room)
             ,_.partial(strategyScout.ensureVision, exits[exitDir])
             ,_.partial(ensureDefenses, exits[exitDir])
             ,_.partial(reserveController, exits[exitDir])            
+            ,_.partial(spawnHarvesters, room, exits[exitDir])            
             ,_.partial(ensureInfrastructure, room.name, exits[exitDir])
-            ,_.partial(spawnHarvesters, room, exits[exitDir])
         );
     }
     return bTree.SUCCESS;
