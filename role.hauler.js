@@ -11,6 +11,7 @@ var roleHauler = {
             if(creep.memory.home !== undefined && creep.room.name !== creep.memory.home)
             {
                 utils.navToRoom(creep, creep.memory.home);
+                //creep.moveTo(Game.rooms[creep.memory.home].storage);
             }
             else
             {
@@ -38,7 +39,7 @@ var roleHauler = {
                 {
                     if(creep.transfer(target, creep.memory.resourceType) == ERR_NOT_IN_RANGE) 
                     {
-                        creep.moveTo(target);
+                        creep.moveTo(target, {reusePath: 10});
                     }
                 }
                 else if(spawner && creep.pos.isNearTo(spawner))
@@ -47,7 +48,7 @@ var roleHauler = {
                 }
                 else if(spawner)
                 {
-                    creep.moveTo(spawner);
+                    creep.moveTo(spawner, {reusePath: 10});
                 }
                 
                 if(_.sum(creep.carry) == 0)

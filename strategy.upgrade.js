@@ -52,7 +52,7 @@ function getBodyPartsUpgraderStatic(room)
 {
     var parts = [MOVE, CARRY];    
     const affordableParts = Math.floor((room.energyCapacityAvailable - 100) / 100);
-    const maxUseful = room.controller.level == 8 ? 15 : (room.storage.store[RESOURCE_ENERGY] > 150000 ? 20 : (room.storage.store[RESOURCE_ENERGY] < 5000 ? 10 : 15));
+    const maxUseful = room.controller.level == 8 ? 15 : (10 + (Math.max(0, room.storage.store[RESOURCE_ENERGY] - 5000) / 20000));
     const workParts = Math.min(affordableParts, maxUseful);
     
     for(var i=0; i<workParts; ++i)

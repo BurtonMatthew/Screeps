@@ -65,6 +65,14 @@ function ensureInfrastructure(sourceRoomName, destRoomName)
             , { role: 'maintenance', full: false, home: destRoomName });
     }
 
+    if(Game.creeps["Maintenance_" + destRoomName + "_B"] === undefined 
+        /*&& destRoom.find(FIND_STRUCTURES, {filter: (struct) => struct.hits < struct.hitsMax * .7}).length > 0*/)
+    {
+        utils.getCrossmapSpawner(destRoomName).createCreep([MOVE, MOVE, CARRY, CARRY, WORK, WORK]
+            , "Maintenance_" + destRoomName + "_B"
+            , { role: 'maintenance', full: false, home: destRoomName });
+    }
+
     if(destRoom.find(FIND_MY_CONSTRUCTION_SITES).length == 0)
     {
         return bTree.SUCCESS;

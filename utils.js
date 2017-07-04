@@ -7,18 +7,27 @@ var utils =
      */
     navToRoom: function(creep, targetRoom)
     {
-        const route = Game.map.findRoute(creep.room, targetRoom, {
-        routeCallback(roomName, fromRoomName) {
-            if(mapM.isHostile(roomName)) { return Infinity; }
-            return 1;
-            }});
-        
-        if(route.length > 0) 
+        if(!creep.memory.navExit || creep.room.name != creep.memory.navExit.roomName)
         {
-            const exit = creep.pos.findClosestByRange(route[0].exit, {maxRooms: 1});
-            const path = creep.pos.findPathTo(exit, {maxRooms: 1});
-            creep.moveByPath(path);
+            const route = Game.map.findRoute(creep.room, targetRoom, {
+            routeCallback(roomName, fromRoomName) {
+                if(mapM.isHostile(roomName)) { return Infinity; }
+                return 1;
+            }});
+
+            if(route.length > 0) 
+            {
+                const exit = creep.pos.findClosestByRange(route[0].exit, {maxRooms: 1});
+                creep.memory.navExit = exit.pos;
+                creep.moveTo(exit, {reusePath: 15});
+            }
         }
+        else
+        {
+            creep.moveTo(new RoomPosition(creep.memory.navExit.x, creep.memory.navExit.y, creep.memory.navExit.roomName));
+        }
+        
+        
     },
     
     /** @param {Creep} creep */

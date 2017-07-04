@@ -69,7 +69,8 @@ function ensureExplorers(room)
 function dumpToTerm(room)
 {
     if(Game.creeps["STORE_" +room.name] === undefined
-        && room.storage && _.sum(room.storage.store) - room.storage.store[RESOURCE_ENERGY] > 50000)
+        && room.storage && _.sum(room.storage.store) - room.storage.store[RESOURCE_ENERGY] > 50000
+        && room.terminal && _.sum(room.terminal.store) < 150000)
     {
         utils.getAvailableSpawner(room).createCreep([MOVE,MOVE,MOVE,CARRY,CARRY,CARRY,CARRY,CARRY,CARRY], "STORE_" + room.name, {role:c.ROLE_TERMINAL_DUMPER, full:false});
     }
