@@ -40,7 +40,7 @@ var roleStaticHarvester = {
                 {
                     didMove = utils.moveTo(creep, new RoomPosition(creep.memory.standX, creep.memory.standY, creep.memory.standRoom)) == OK;
                 }
-                catch(err){}
+                catch(err){ console.log(err); }
             }
             const harvestError = creep.harvest(source)
             if(harvestError == ERR_NOT_IN_RANGE && !didMove) 

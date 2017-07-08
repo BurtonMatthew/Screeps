@@ -60,9 +60,13 @@ var roleHauler = {
         else
         {
             const container = Game.getObjectById(creep.memory.containerId);
-            if(creep.withdraw(container, creep.memory.resourceType) == ERR_NOT_IN_RANGE) 
+            if(!creep.pos.isNearTo(container))
             {
                 creep.moveTo(container);
+            }
+            else if(container.store[creep.memory.resourceType] > creep.carryCapacity - creep.carry[creep.memory.resourceType])
+            {
+                creep.withdraw(container, creep.memory.resourceType);
             }
             
             if(creep.carryCapacity == _.sum(creep.carry))
