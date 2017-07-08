@@ -30,7 +30,9 @@ function scoutObserver(roomName)
     {
         if(Game.map.getRoomLinearDistance(roomName, observers[i].room.name) <= OBSERVER_RANGE
             && observers[i].observeRoom(roomName) == OK)
+        {
             return bTree.INPROGRESS;
+        }
     }
     return bTree.FAIL;
 }

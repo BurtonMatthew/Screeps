@@ -8,6 +8,7 @@ function spawn(controller)
         
     if(controller.room.storage !== undefined && controller.pos.inRangeTo(controller.room.storage, 3))
     {
+        
         if(Game.creeps["Upgrader" + controller.room.name] === undefined)
         {
             utils.getClosestSpawner(controller.pos).createCreep(getBodyPartsUpgraderStatic(controller.room), "Upgrader" + controller.room.name
@@ -52,7 +53,7 @@ function getBodyPartsUpgraderStatic(room)
 {
     var parts = [MOVE, CARRY];    
     const affordableParts = Math.floor((room.energyCapacityAvailable - 100) / 100);
-    const maxUseful = room.controller.level == 8 ? 15 : (10 + (Math.max(0, room.storage.store[RESOURCE_ENERGY] - 5000) / 20000));
+    const maxUseful = Math.min(48, room.controller.level == 8 ? 15 : (10 + (Math.max(0, room.storage.store[RESOURCE_ENERGY] - 5000) / 20000)));
     const workParts = Math.min(affordableParts, maxUseful);
     
     for(var i=0; i<workParts; ++i)

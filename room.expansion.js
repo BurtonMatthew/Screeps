@@ -13,8 +13,12 @@ function getBodyPartsBuilder(room)
 {
     var roomEnergy = room.energyCapacityAvailable;
     var workParts = 0;
+    var totalParts = 2;
+    if(room.storage && _.sum(room.storage.store) > 800000)
+        totalParts = 9;
+        
     var parts = [];
-    while(workParts < 2 && roomEnergy >= 200)
+    while(workParts < totalParts && roomEnergy >= 200)
     {
         roomEnergy -= 200
         workParts++;

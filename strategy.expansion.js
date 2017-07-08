@@ -21,7 +21,7 @@ function spawn(room)
     
     for(var i=0, len=myControllers.length; i<len; ++i)
     {
-        if(myControllers[i].level < 3 || myControllers[i].room.find(FIND_MY_STRUCTURES, {filter: (struct) => struct.structureType == STRUCTURE_SPAWN}).length == 0)
+        if(myControllers[i].level < 2 || myControllers[i].room.find(FIND_MY_STRUCTURES, {filter: (struct) => struct.structureType == STRUCTURE_SPAWN}).length == 0)
         {
             const route = Game.map.findRoute(room, myControllers[i].room.name, {
                 routeCallback(roomName, fromRoomName) {
@@ -68,6 +68,7 @@ function spawn(room)
 
 function getBestExpansionRoom()
 {
+    return "W6N2";
     var bestRoom = "";
     var bestRoomWeight = 0;
     var myMinerals = { O: 1, U: 1 }; // Todo actually scan these out
@@ -77,14 +78,14 @@ function getBestExpansionRoom()
             continue;
         
         var room = Memory.mapInfo[roomName];
-        if(!room.hasController || room.controller.my)
+        if(!room.hasController || room.controller.my || room.isHostile)
             continue;
         
         var totalScore = (sourceScore(room)                   * 0.45)
-                        +(distanceScore(roomName)             * 0.15)
-                        +(compactScore(room)                  * 0.05)
-                        +(mineralScore(myMinerals, room)      * 0.15)
-                        +(continguousScore(roomName)          * 0.15)
+                        +(distanceScore(roomName)             * 0.18)
+                        +(compactScore(room)                  * 0.02)
+                        +(mineralScore(myMinerals, room)      * 0.20)
+                        +(continguousScore(roomName)          * 0.10)
                         +(sourceKeeperAdjacentScore(roomName) * 0.05);
         
         if(totalScore > bestRoomWeight)
@@ -147,24 +148,23 @@ function mineralScore(myMinerals, room)
     {
         if(!(room.minerals[i].mineralType in myMinerals))
         {
-            score += 0.2;
+            score += 0.5;
         }
         
         switch(room.minerals[i].mineralType)
         {
             case RESOURCE_HYDROGEN:
             case RESOURCE_OXYGEN:
-                score += 0;
+                score += 0.1;
                 break;
             case RESOURCE_UTRIUM:
             case RESOURCE_LEMERGIUM:
             case RESOURCE_KEANIUM:
             case RESOURCE_ZYNTHIUM:
-                score += 0.5;
+                score += 0.2;
                 break;
             case RESOURCE_CATALYST:
-            case RESOURCE_GHODIUM:
-                score += 0.8;
+                score += 0.5;
                 break;
         }
     }

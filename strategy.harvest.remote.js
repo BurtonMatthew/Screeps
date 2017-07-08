@@ -95,7 +95,7 @@ function ensureInfrastructure(sourceRoomName, destRoomName)
 function reserveController(roomName)
 {
     const room = Game.rooms[roomName];
-    if(!room.controller || (room.controller.reservation.username === "Glenstorm" && room.controller.reservation.ticksToEnd > 3000))
+    if(!room.controller || (room.controller.reservation && room.controller.reservation.username === "Glenstorm" && room.controller.reservation.ticksToEnd > 3000))
         return bTree.SUCCESS;
 
     if(Game.creeps["Reserve_" + roomName] === undefined)

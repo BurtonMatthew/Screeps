@@ -1,3 +1,5 @@
+var utils = require('utils');
+
 var roleHarvester = {
 
     /** @param {Creep} creep **/
@@ -41,6 +43,7 @@ var roleHarvester = {
         }
         else
         {
+            /*
             if(creep.carry.energy < creep.carryCapacity) 
             {
                 var sourceToMine = creep.pos.findClosestByRange(FIND_SOURCES, {
@@ -60,6 +63,8 @@ var roleHarvester = {
             {
                 creep.memory.full = true;
             }
+            */
+            creep.memory.full = utils.fillEnergy(creep);
         }
 	}
 };

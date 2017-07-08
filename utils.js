@@ -19,7 +19,7 @@ var utils =
             {
                 const exit = creep.pos.findClosestByRange(route[0].exit, {maxRooms: 1});
                 creep.memory.navExit = exit.pos;
-                creep.moveTo(exit, {reusePath: 15});
+                creep.moveTo(exit, {reusePath: 15, maxRooms:1});
             }
         }
         else
