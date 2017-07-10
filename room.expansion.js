@@ -73,10 +73,13 @@ function ensureExplorers(room)
 function dumpToTerm(room)
 {
     if(Game.creeps["STORE_" +room.name] === undefined
-        && room.storage && _.sum(room.storage.store) - room.storage.store[RESOURCE_ENERGY] > 50000
+        && room.storage && room.storage.store[RESOURCE_ENERGY] > 50000
         && room.terminal && _.sum(room.terminal.store) < 200000)
     {
-        utils.getAvailableSpawner(room).createCreep([MOVE,MOVE,MOVE,CARRY,CARRY,CARRY,CARRY,CARRY,CARRY], "STORE_" + room.name, {role:c.ROLE_TERMINAL_DUMPER, full:false});
+        if(room.storage.store[RESOURCE_ENERGY] > 500000)
+            utils.getAvailableSpawner(room).createCreep([MOVE,MOVE,MOVE,MOVE,MOVE,CARRY,CARRY,MOVE,CARRY,CARRY,MOVE,CARRY,CARRY,CARRY,CARRY,CARRY,CARRY,CARRY,CARRY,CARRY,CARRY], "STORE_" + room.name, {role:c.ROLE_TERMINAL_DUMPER, full:false});
+        else
+            utils.getAvailableSpawner(room).createCreep([MOVE,MOVE,MOVE,MOVE,CARRY,CARRY,CARRY,CARRY,CARRY,CARRY,CARRY,CARRY], "STORE_" + room.name, {role:c.ROLE_TERMINAL_DUMPER, full:false});
     }
 
     return bTree.SUCCESS;
@@ -162,6 +165,10 @@ var roomExpansion = {
             // Todo sort
             if(orders.length > 0)
                 Game.market.deal(orders[0].id, room.terminal.store[maxRsc], room.name);
+            else if(Game.rooms.W6N2.terminal.store[RESOURCE_ENERGY] < 200000 && room.terminal.store[RESOURCE_ENERGY] > 100000)
+            {
+                room.terminal.send(RESOURCE_ENERGY, 50000, "W6N2");
+            }
 
         }
     }

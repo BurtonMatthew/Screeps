@@ -65,7 +65,7 @@ function ensureInfrastructure(sourceRoomName, destRoomName)
             , { role: 'maintenance', full: false, home: destRoomName });
     }
 
-    if(Game.creeps["Maintenance_" + destRoomName + "_B"] === undefined 
+    if(Memory.mapInfo[destRoomName].sources.length > 1 && Game.creeps["Maintenance_" + destRoomName + "_B"] === undefined 
         /*&& destRoom.find(FIND_STRUCTURES, {filter: (struct) => struct.hits < struct.hitsMax * .7}).length > 0*/)
     {
         utils.getCrossmapSpawner(destRoomName).createCreep([MOVE, MOVE, CARRY, CARRY, WORK, WORK]

@@ -68,7 +68,7 @@ function spawn(room)
 
 function getBestExpansionRoom()
 {
-    return "W6N2";
+    return "W7N1";
     var bestRoom = "";
     var bestRoomWeight = 0;
     var myMinerals = { O: 1, U: 1 }; // Todo actually scan these out

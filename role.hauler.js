@@ -64,7 +64,7 @@ var roleHauler = {
             {
                 creep.moveTo(container);
             }
-            else if(container.store[creep.memory.resourceType] > creep.carryCapacity - creep.carry[creep.memory.resourceType])
+            else if(container.store[creep.memory.resourceType] > creep.carryCapacity - _.sum(creep.carry))
             {
                 creep.withdraw(container, creep.memory.resourceType);
             }

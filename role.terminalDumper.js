@@ -6,9 +6,9 @@ var roleTerminalDumper = {
     {
         if(!creep.memory.full)
         {
-            if(creep.carry[RESOURCE_ENERGY] === 0 && creep.room.terminal.store[RESOURCE_ENERGY] < 100000)
+            if(creep.carry[RESOURCE_ENERGY] === 0 && creep.room.terminal.store[RESOURCE_ENERGY] < 150000)
             {
-                if(creep.withdraw(creep.room.storage, RESOURCE_ENERGY, creep.carryCapacity / 3) === ERR_NOT_IN_RANGE)
+                if(creep.withdraw(creep.room.storage, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE)
                     creep.moveTo(creep.room.storage);
             }
             else
@@ -18,7 +18,7 @@ var roleTerminalDumper = {
                                 .filter((key) => key !== RESOURCE_ENERGY)
                                 .max((key) => creep.room.storage.store[key]);
 
-                if(creep.withdraw(creep.room.storage, maxRsc) == ERR_NOT_IN_RANGE) //how?
+                if(creep.withdraw(creep.room.storage, maxRsc) == ERR_NOT_IN_RANGE)
                     creep.moveTo(creep.room.storage);
             }
 

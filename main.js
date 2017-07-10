@@ -18,6 +18,7 @@ let roleTerminalDumper = require('role.terminalDumper');
 let roomExpansion = require('room.expansion');
 let strategyKeeperRoom = require('strategy.keeperRoom');
 let roomLayout = require('room.layout');
+let roomUpgrade = require('room.upgrade');
 
 
 const profiler = require('screeps-profiler');
@@ -53,7 +54,11 @@ module.exports.loop = function ()
         for(var name in Game.rooms)
         {
             var room = Game.rooms[name];
-            if(room.controller !== undefined && room.controller.my)
+            if(name == "W6N2")
+            {
+                roomUpgrade.run(room);
+            }
+            else if(room.controller !== undefined && room.controller.my)
             {
                 roomExpansion.run(room);
             }

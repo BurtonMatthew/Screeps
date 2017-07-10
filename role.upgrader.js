@@ -21,6 +21,11 @@ var roleUpgrader = {
             {
                 creep.memory.travelTime = CREEP_LIFE_TIME - creep.ticksToLive;
             }
+
+            if(creep.room == "W1N3")
+                creep.moveTo(creep.room.controller, {range:2});
+            else
+                creep.moveTo(creep.room.controller, {range:1});
             
             if(creep.memory.linkId !== undefined)
             {
