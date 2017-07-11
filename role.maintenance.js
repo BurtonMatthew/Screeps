@@ -1,4 +1,5 @@
 var utils = require('utils');
+let c = require('consts');
 
 var roleMaintenance = {
 
@@ -29,7 +30,8 @@ var roleMaintenance = {
             {
                 var maintTarget = creep.pos.findClosestByRange(FIND_STRUCTURES, {
                         filter: (structure) => {
-                            return structure.hits < structure.hitsMax * .7 
+                            return structure.hits 
+                            && structure.hits < structure.hitsMax * .7 
                             && structure.structureType != STRUCTURE_WALL
                             && structure.structureType != STRUCTURE_RAMPART;
                         }});
@@ -38,7 +40,8 @@ var roleMaintenance = {
                 {
                     maintTarget = creep.pos.findClosestByRange(FIND_STRUCTURES, {
                         filter: (structure) => {
-                            return structure.hits < structure.hitsMax * .05 
+                            return structure.hits
+                            && structure.hits < structure.hitsMax * .05 
                             && structure.structureType == STRUCTURE_RAMPART;
                         }
                     });
@@ -47,6 +50,7 @@ var roleMaintenance = {
                 if(!maintTarget)
                 {
                     maintTarget = _(creep.room.find(FIND_STRUCTURES))
+                                    .filter((struct) => struct.hits)
                                     .sortBy((struct) => (struct.hits / struct.hitsMax))
                                     .first();
                 }
@@ -54,6 +58,10 @@ var roleMaintenance = {
                 if(maintTarget)
                 {
                     creep.memory.target = maintTarget.id;
+                }
+                else if(creep.room.find(FIND_MY_CONSTRUCTION_SITES).length > 0)
+                {
+                    creep.memory.role = c.ROLE_BUILDER;
                 }
             }
             
