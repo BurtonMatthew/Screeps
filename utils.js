@@ -188,6 +188,11 @@ var utils =
                 curPos = pathInfo.path[i];
                 var xDif = curPos.x - prevPos.x;
                 var yDif = curPos.y - prevPos.y;
+
+                // Fix room boundary crossings
+                if(xDif === 49) xDif = -1; else if(xDif === -49) xDif = 1;
+                if(yDif === 49) yDif = -1; else if(yDif === -49) yDif = 1;
+
                 if(yDif === -1 && xDif === 0)
                     pathDirs[i] = TOP;
                 else if(yDif === -1 && xDif === 1)
@@ -204,6 +209,8 @@ var utils =
                     pathDirs[i] = LEFT;
                 else if(yDif === -1 && xDif === -1)
                     pathDirs[i] = TOP_LEFT;
+                else
+                    console.log("huh? " + xDif + " " + yDif);
                     
                 prevPos = curPos;
             }
@@ -244,9 +251,34 @@ var utils =
                 case LEFT:          nextPos = new RoomPosition(creep.pos.x-1, creep.pos.y, creep.pos.roomName);     break;
                 case TOP_LEFT:      nextPos = new RoomPosition(creep.pos.x-1, creep.pos.y-1, creep.pos.roomName);   break;
             }
+            //fixup room boundaries
+            if(nextPos.x === -1)
+            {
+                nextPos.x = 49;
+                nextPos.roomName = Game.map.describeExits(nextPos.roomName)[LEFT];
+            }
+            else if(nextPos.x === 50)
+            {
+                nextPos.x = 0;
+                nextPos.roomName = Game.map.describeExits(nextPos.roomName)[RIGHT];
+            }
+            else if(nextPos.y === -1)
+            {
+                nextPos.y = 49;
+                nextPos.roomName = Game.map.describeExits(nextPos.roomName)[TOP];
+            }
+            else if(nextPos.y === 50)
+            {
+                nextPos.y = 0;
+                nextPos.roomName = Game.map.describeExits(nextPos.roomName)[BOTTOM];
+            }
+
             if(nextPos === undefined)
-                console.log("Lets see " + creep.memory._myMove.p.length + " " + creep.memory._myMove.i);
-            const creeps = creep.room.lookForAt(LOOK_CREEPS, nextPos);
+            {
+                console.log("Lets see " + creep.memory._myMove.p.length + " " + creep.memory._myMove.i + " " + creep.memory._myMove.p[creep.memory._myMove.i]);
+                return;
+            }
+            const creeps = Game.rooms[nextPos.roomName].lookForAt(LOOK_CREEPS, nextPos);
             if(creeps.length > 0 && creeps[0].my)
             {
                 creeps[0].memory.swapWithMe = creep.id;

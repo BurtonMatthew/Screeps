@@ -10,8 +10,8 @@ var roleHauler = {
         {
             if(creep.memory.home !== undefined && creep.room.name !== creep.memory.home)
             {
-                utils.navToRoom(creep, creep.memory.home);
-                //creep.moveTo(Game.rooms[creep.memory.home].storage);
+                //utils.navToRoom(creep, creep.memory.home);
+                utils.moveTo(creep, Game.rooms[creep.memory.home].controller, {reusePath: 15, range:2});
             }
             else
             {

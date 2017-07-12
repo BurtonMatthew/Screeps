@@ -121,9 +121,13 @@ function spawnHarvesters(homeRoom, roomName)
 function ensureDefenses(roomName)
 {
     const room = Game.rooms[roomName];
-    if(Game.creeps["Fighter" + roomName] === undefined && room.find(FIND_HOSTILE_CREEPS).length > 0 )
+    if(room.find(FIND_HOSTILE_CREEPS).length > 0)
     {
-        utils.getCrossmapSpawner(roomName).createCreep([TOUGH,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK], "Fighter" + roomName, {role:c.ROLE_FIGHTER, home:roomName});
+        if(Game.creeps["Fighter" + roomName] === undefined)
+        {
+            utils.getCrossmapSpawner(roomName).createCreep([TOUGH,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK], "Fighter" + roomName, {role:c.ROLE_FIGHTER, home:roomName});
+        }
+        return bTree.INPROGRESS;
     }
 
     return bTree.SUCCESS;
