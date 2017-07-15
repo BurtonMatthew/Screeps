@@ -62,6 +62,20 @@ var roomUpgrade = {
                 else
                     refiller.withdraw(room.terminal, RESOURCE_ENERGY);
             }
+            else if(room.controller.level === 8)
+            {
+                /** @type {StructureExtension[]} */
+                const extensions = room.find(FIND_MY_STRUCTURES, 
+                    {filter: (s) => s.structureType === STRUCTURE_EXTENSION && s.energy < s.energyCapacity});
+
+                if(extensions.length > 0)
+                {
+                    if(_.sum(refiller.carry) === refiller.carryCapacity)
+                        refiller.transfer(extensions[0], RESOURCE_ENERGY);
+                    else
+                        refiller.withdraw(room.terminal, RESOURCE_ENERGY);
+                }
+            }
         }
 
         for(var i=0; i<NUM_UPGRADERS; ++i)
@@ -122,6 +136,35 @@ var roomUpgrade = {
         if(room.terminal.store[RESOURCE_ENERGY] < 200000)
             global.term = {};
 
+
+        if(room.controller.my && room.controller.level === 8 
+            && room.terminal.store[RESOURCE_ENERGY] > _(_.range(1,5)).map((x) => CONTROLLER_LEVELS[x]).sum())
+        {
+            var claimer = Game.creeps["Claimer_" + room.name];
+            if(!claimer)
+            {
+                spawn.createCreep([MOVE,CLAIM], "Claimer_" + room.name);
+            }
+            else
+            {
+                room.controller.unclaim();
+            }
+        }
+        else if(!room.controller.my)
+        {
+            var claimer = Game.creeps["Claimer_" + room.name];
+            if(claimer)
+            {
+                if(claimer.claimController(room.controller) === ERR_NOT_IN_RANGE)
+                    claimer.moveTo(room.controller);
+            }
+        }
+        else if(room.controller.my && room.controller.level === 1)
+        {
+            var claimer = Game.creeps["Claimer_" + room.name];
+            if(claimer)
+                claimer.suicide();
+        }
     }
 }
 module.exports = roomUpgrade;
