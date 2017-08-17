@@ -52,6 +52,8 @@ function spawn(source, homeRoom)
         {
             creepMem.standX = container.pos.x;
             creepMem.standY = container.pos.y;
+            if(source.id === "59830014b097071b4adc3bca") // Hack, adjacent sources and containers blow up bad -- fix this
+                creepMem.standY = 45;
             creepMem.standRoom = container.pos.roomName;
         }
         const spawner = isDistance ? utils.getAvailableSpawner(homeRoom) : utils.getClosestSpawner(source.pos);
@@ -61,7 +63,7 @@ function spawn(source, homeRoom)
     else if(harvestCreep.getActiveBodyparts(CARRY) == 0) // Drop miner
     {
         const dist = source.pos.getRangeTo(source.room.controller); // todo remote
-        const numHarvesters = isDistance ? 3 : Math.ceil(dist / 20);
+        const numHarvesters = homeRoom.energyCapacityAvailable >= 1500 ? 1 : (isDistance ? 2 : Math.ceil(dist / 20));
 
         for(var i=0; i<numHarvesters; ++i)
         {
@@ -94,6 +96,13 @@ function spawn(source, homeRoom)
             utils.getAvailableSpawner(source.room).createCreep([MOVE, CARRY, CARRY], "Refiller" + source.room.name, { role: 'refiller', home: source.room.name });
             return bTree.INPROGRESS;
         }
+
+        const refillerCreep2 = Game.creeps["Refiller2" + source.room.name];
+        if(refillerCreep2 === undefined)
+        {
+            utils.getAvailableSpawner(source.room).createCreep([MOVE, CARRY, CARRY], "Refiller2" + source.room.name, { role: 'refiller', home: source.room.name });
+            return bTree.INPROGRESS;
+        }
     }
     return bTree.SUCCESS;
 }
@@ -124,15 +133,16 @@ function getBodyPartsHauler(source, spawnRoom, isMineral)
 {
     var parts = [];
     const maxAffordableParts = Math.floor(spawnRoom.energyCapacityAvailable  / 150);
-    const maxUsefulParts = isMineral ? 1 : 5;
+    const maxUsefulParts = isMineral ? 1 : 10;
     const numPart = Math.min(maxAffordableParts, maxUsefulParts);
+
     for(var i=0; i<numPart; ++i)
     {
         parts.push(CARRY);
         parts.push(CARRY);
         parts.push(MOVE);
     }
-        
+    
     return parts;
 }
 

@@ -14,7 +14,8 @@ var roleUpgrader = {
             const upgradeError = creep.upgradeController(creep.room.controller)
             if(upgradeError == ERR_NOT_IN_RANGE) 
             {
-                creep.moveTo(creep.room.controller);
+                //creep.moveTo(creep.room.controller);
+                utils.moveTo(creep, creep.room.controller);
             }
             
             else if(upgradeError == OK && creep.memory.travelTime === undefined)
@@ -22,22 +23,20 @@ var roleUpgrader = {
                 creep.memory.travelTime = CREEP_LIFE_TIME - creep.ticksToLive;
             }
 
-            if(creep.room == "W1N3")
-                creep.moveTo(creep.room.controller, {range:2});
-            else
-                creep.moveTo(creep.room.controller, {range:1});
+            //creep.moveTo(creep.room.controller, {range:1});
             
             if(creep.memory.linkId !== undefined)
             {
                 const link = Game.getObjectById(creep.memory.linkId);
                 if(creep.withdraw(link, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE)
-                    creep.moveTo(link);
+                    //creep.moveTo(link);
+                    utils.moveTo(creep, link, {range:1});
                     
                 if(link.energy <= 200 && creep.room.memory.linkReqEnergy === undefined)
                     creep.room.memory.linkReqEnergy = link.id;
             }
             
-            if(creep.room.storage !== undefined)
+            if(creep.room.storage !== undefined && creep.carry[RESOURCE_ENERGY] < creep.getActiveBodyparts(WORK))
             {
                 creep.withdraw(creep.room.storage, RESOURCE_ENERGY);
             }

@@ -165,6 +165,11 @@ var roomUpgrade = {
             if(claimer)
                 claimer.suicide();
         }
+
+        var upgradeHack = Game.creeps["UP_" + room.name];
+        if(!upgradeHack)
+            Game.spawns["Spawn17"].createCreep([MOVE,MOVE,CARRY,CARRY,WORK,WORK], "UP_" + room.name, 
+                {full: false, role:c.ROLE_UPGRADER, home:room.name});
     }
 }
 module.exports = roomUpgrade;

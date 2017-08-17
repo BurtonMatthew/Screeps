@@ -15,8 +15,8 @@ function visualize(room, layout)
 
 function apply(room, layout)
 {
-    //if(layout.storage)
-    //    room.createConstructionSite(new RoomPosition(layout.storage.x, layout.storage.y, room.name), STRUCTURE_STORAGE);
+    if(layout.storage)
+        room.createConstructionSite(new RoomPosition(layout.storage.x, layout.storage.y, room.name), STRUCTURE_STORAGE);
     //if(layout.terminal)
     //    room.createConstructionSite(new RoomPosition(layout.terminal.x, layout.terminal.y, room.name), STRUCTURE_TERMINAL);
     applyArray(room, layout.spawns, STRUCTURE_SPAWN);
@@ -231,15 +231,15 @@ function createBaseLayout(room)
     
     // Roads - build a destination list
     var destinations = [];
-    // To exits
-    for(exit in exits)
-    {
-        destinations.push(layout.storage.findClosestByPath(parseInt(exit)));
-    }
     // To sources
     for(var i=0, len=layout.containers.length; i<len; ++i)
     {
         destinations.push(layout.containers[i]);
+    }
+    // To exits
+    for(exit in exits)
+    {
+        destinations.push(layout.storage.findClosestByPath(parseInt(exit)));
     }
     var roadTiles = [];
     for(var i=0, len=destinations.length; i<len; ++i)

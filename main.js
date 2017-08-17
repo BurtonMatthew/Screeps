@@ -15,8 +15,10 @@ let roleStorageLink = require('role.storageLink');
 let roleScout = require('role.scout');
 let roleReserver = require('role.reserver');
 let roleTerminalDumper = require('role.terminalDumper');
+let roleRangedDefense = require('role.rangedDefense');
 let roomExpansion = require('room.expansion');
 let strategyKeeperRoom = require('strategy.keeperRoom');
+let strategyAssault = require('strategy.assault');
 let roomLayout = require('room.layout');
 let roomUpgrade = require('room.upgrade');
 
@@ -39,11 +41,18 @@ profiler.registerObject(roleStorageLink, 'roleStorageLink');
 profiler.registerObject(roleScout, 'roleScout');
 profiler.registerObject(roleReserver, 'roleReserver');
 profiler.registerObject(roomExpansion, 'roomExpansion');
+profiler.regi
 
 module.exports.loop = function () 
 {
     profiler.wrap(function()
     {
+        if(Game.cpu.bucket < 200)
+        {
+            console.log("NO BUCKET");
+            return;
+        }
+
         for(var name in Memory.creeps) 
         {
             if(!Game.creeps[name]) {
@@ -53,34 +62,37 @@ module.exports.loop = function ()
 
         for(var name in Game.rooms)
         {
+            //continue;
             var room = Game.rooms[name];
-            if(name == "W6N2")
-            {
-                roomUpgrade.run(room);
-            }
-            else if(room.controller !== undefined && room.controller.my)
+            if(room.controller !== undefined && room.controller.my)
             {
                 roomExpansion.run(room);
             }
 
             if("layout" in room.memory)
             {
-                if(room.memory.lastApply === undefined || room.memory.lastApply + 2000 < Game.time)
+                if(room.memory.lastApply === undefined || room.memory.lastApply + 730 < Game.time)
                 {
                     roomLayout.apply(room, room.memory.layout);
                     room.memory.lastApply = Game.time;
                 }
             }
+            else
+            {
+                //room.memory.layout = roomLayout.createBaseLayout(room);
+            }
         }
         
         for(var name in Game.flags)
         {
+            //continue;
             if(Game.flags[name].name == "keeper")
                 strategyKeeperRoom.run(Game.rooms[Game.flags[name]]);
         }
         
         for(var i in Game.creeps) 
         {
+            //continue;
             var creep = Game.creeps[i];
             if(creep.memory.role === 'harvester' || creep.memory.role === c.ROLE_HARVESTER)
             {
@@ -146,6 +158,12 @@ module.exports.loop = function ()
             {
                 roleTerminalDumper.run(creep);
             }
+            else if(creep.memory.role == "rangedDefense")
+            {
+                roleRangedDefense.run(creep);
+            }
         }
+
+        strategyAssault.run();
     });
 }

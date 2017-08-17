@@ -13,7 +13,7 @@ function getBodyPartsBuilder(room)
 {
     var roomEnergy = room.energyCapacityAvailable;
     var workParts = 0;
-    var totalParts = 2;
+    var totalParts = 3;
     if(room.storage && _.sum(room.storage.store) > 800000)
         totalParts = 9;
         
@@ -93,6 +93,13 @@ var roomExpansion = {
         const sources = room.find(FIND_SOURCES);
         const minerals = room.find(FIND_MINERALS);
 
+        const hostiles = room.find(FIND_HOSTILE_CREEPS);
+        //if(!Game.creeps["Ranged"])
+        //    Game.spawns["Spawn1"].createCreep([RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,MOVE,MOVE,MOVE], "Ranged", {role:"rangedDefense"});
+        
+        //if(hostiles.length > 1)
+        //    Game.spawns["Spawn1"].createCreep([RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,MOVE,MOVE,MOVE], "Ranged" + Math.floor(Math.random() * 1000000), {role:"rangedDefense"});
+
         bTree.sequence
         (
              _.partial(ensureBaseHarvesters, room)
@@ -101,21 +108,50 @@ var roomExpansion = {
             ,_.partial(strategyBuild.spawn, room)
             ,_.partial(ensureBaseMaintenances, room)
             ,_.partial(strategyUpgrade.spawn, room.controller)
+            ,_.partial(strategyHarvestRemote.ensureRemoteHarvest, room)            
             ,_.partial(strategyExpansion.spawn, room)
-            ,_.partial(ensureExplorers, room)
-            ,_.partial(dumpToTerm, room)
-            ,_.partial(strategyHarvestRemote.ensureRemoteHarvest, room)
+            //,_.partial(ensureExplorers, room)
+            //,_.partial(dumpToTerm, room)
         );
-            
-        const hostiles = room.find(FIND_HOSTILE_CREEPS);
+        
+        //var rooms = ["E39S4", "E36S8", "E39S9"];
+        /*
+        if(!Game.creeps["FighterE39S4"])
+            Game.spawns["Spawn1"].createCreep([ATTACK,ATTACK,ATTACK,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,RANGED_ATTACK,RANGED_ATTACK,HEAL], "FighterE39S4", {role:"fighter", home:"E39S4"});
+        else if(!Game.creeps["FighterE36S8"])
+            Game.spawns["Spawn1"].createCreep([ATTACK,ATTACK,ATTACK,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,RANGED_ATTACK,RANGED_ATTACK,HEAL], "FighterE36S8", {role:"fighter", home:"E36S8"});
+        else if(!Game.creeps["FighterE39S9"])
+            Game.spawns["Spawn1"].createCreep([ATTACK,ATTACK,ATTACK,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,RANGED_ATTACK,RANGED_ATTACK,HEAL], "FighterE39S9", {role:"fighter", home:"E39S9"});
+        else if(!Game.creeps["FighterE38S8"])
+            Game.spawns["Spawn1"].createCreep([ATTACK,ATTACK,ATTACK,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,RANGED_ATTACK,RANGED_ATTACK,HEAL], "FighterE39S9", {role:"fighter", home:"E39S9"});
+        */
+
+        
+        //if(!Game.creeps["FighterE33S2"])
+        //    Game.spawns["Spawn1"].createCreep([TOUGH,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,ATTACK,ATTACK,ATTACK,ATTACK,HEAL], "FighterE33S2", {role:"fighter", home:"E33S2"});
+        /*
+        else if(!Game.creeps["FighterE38S6"])
+            Game.spawns["Spawn1"].createCreep([TOUGH,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,HEAL], "FighterE38S6", {role:"fighter", home:"E38S6"});
+        else if(!Game.creeps["FighterE38S8"])
+            Game.spawns["Spawn1"].createCreep([TOUGH,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,HEAL], "FighterE38S8", {role:"fighter", home:"E38S8"});
+        else if(!Game.creeps["FighterE37S7"])
+            Game.spawns["Spawn1"].createCreep([TOUGH,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,HEAL], "FighterE37S7", {role:"fighter", home:"E37S7"});
+        */
+        
+        //Game.spawns["Spawn1"].createCreep([RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,MOVE,MOVE,MOVE], "Ranged" + Math.floor(Math.random() * 1000000), {role:"rangedDefense"});
+
+        
+        //const hostiles = room.find(FIND_HOSTILE_CREEPS);
         const towers = room.find(FIND_MY_STRUCTURES, {filter: (structure) => { return structure.structureType == STRUCTURE_TOWER; }});
             
         if(hostiles.length > 0)
         {
             for(var i=0; i<towers.length; ++i)
             {
-                var towerTarget = towers[i].pos.findClosestByRange(FIND_HOSTILE_CREEPS);
-                    towers[i].attack(towerTarget);
+                var towerTarget = towers[i].pos.findClosestByRange(FIND_HOSTILE_CREEPS, (c) => c.getActiveBodyparts(HEAL) > 1 );
+                if(!towerTarget)
+                    towerTarget = towers[i].pos.findClosestByRange(FIND_HOSTILE_CREEPS);
+                towers[i].attack(towerTarget);
             }
         }
         
@@ -154,6 +190,7 @@ var roomExpansion = {
             }
         }
 
+        /*
         if(room.terminal && room.terminal.cooldown === 0)
         {
             const maxRsc = _(room.terminal.store)
@@ -170,6 +207,15 @@ var roomExpansion = {
                 room.terminal.send(RESOURCE_ENERGY, 50000, "W6N2");
             }
 
+        }
+        */
+
+        if(room.controller && !room.controller.safeMode && room.controller.safeModeAvailable > 0 && !room.controller.safeModeCooldown)
+        {
+            if(room.find(FIND_HOSTILE_CREEPS, {filter: (c) => c.pos.x > 4 && c.pos.x < 46 && c.pos.y > 4 && c.pos.y < 46 }).length > 0)
+            {
+                room.controller.activateSafeMode();
+            }
         }
     }
 }

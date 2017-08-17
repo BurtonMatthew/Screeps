@@ -11,15 +11,25 @@ var utils =
         {
             const route = Game.map.findRoute(creep.room, targetRoom, {
             routeCallback(roomName, fromRoomName) {
-                if(mapM.isHostile(roomName)) { return Infinity; }
+                //if(mapM.isHostile(roomName)) { return Infinity; }
+                if(fromRoomName == "E37S7" && roomName == "E38S7") { return Infinity; }
+                // Dodge source keeper rooms for now
+                const roomCoord = utils.splitRoomname(roomName);
+                if(Math.abs((Math.abs(roomCoord.x) % 10) - 5) < 2 && 
+                    Math.abs((Math.abs(roomCoord.y) % 10) - 5) < 2)  { return Infinity; }
+
                 return 1;
             }});
 
             if(route.length > 0) 
             {
-                const exit = creep.pos.findClosestByRange(route[0].exit, {maxRooms: 1});
-                creep.memory.navExit = exit.pos;
-                creep.moveTo(exit, {reusePath: 15, maxRooms:1});
+                const exit = creep.pos.findClosestByPath(route[0].exit, {maxRooms: 1});
+                if(exit)
+                {
+                    creep.memory.navExit = exit.pos;
+                    creep.moveTo(exit, {reusePath: 15, maxRooms:1});
+                    //utils.moveTo(creep, exit, {maxRooms:1});
+                }
             }
         }
         else
@@ -132,11 +142,20 @@ var utils =
     
     moveTo: function(creep, dest, opts)
     {
+        if(dest === undefined)
+        {
+            console.log("No dest??")
+            return false;
+        }
         if(opts === undefined)
-            opts = { range: 0 };
+            opts = { };
+        if(opts.range === undefined)
+            opts.range = 0;
+        if(opts.allowContainers === undefined)
+            opts.allowContainers = false;
         if(dest.pos !== undefined)
             dest = dest.pos;
-            
+
         if(creep.pos.x == dest.x && creep.pos.y == dest.y)
             return OK;
             
@@ -168,8 +187,10 @@ var utils =
                                 // Favor roads over plain tiles
                                 costs.set(struct.pos.x, struct.pos.y, 1);
                             } 
-                            else if (struct.structureType !== STRUCTURE_CONTAINER &&
-                                    (struct.structureType !== STRUCTURE_RAMPART || !struct.my)) 
+                            else if (
+                                        (!opts.allowContainers || struct.structureType !== STRUCTURE_CONTAINER)
+                                    &&  (struct.structureType !== STRUCTURE_RAMPART || !struct.my)
+                                    )
                             {
                                 // Can't walk through non-walkable buildings
                                 costs.set(struct.pos.x, struct.pos.y, 0xff);
@@ -309,6 +330,46 @@ var utils =
             }
         }
         return false;
+    },
+
+    /** @param {String} roomName */
+    splitRoomname: function(roomName)
+    {
+        var splitObj = {};
+        if(roomName[0] === "W")
+            splitObj.x = -1;
+        else
+            splitObj.x = 1;
+
+        var digit;
+        var i = 1;
+        var sum = 0;
+        while(digit = parseInt(roomName[i]))
+        {
+            sum *= 10;
+            sum += digit;
+            ++i;
+        }
+
+        splitObj.x *= sum;
+        sum = 0;
+        if(roomName[i] === "N")
+            splitObj.y = -1;
+        else
+            splitObj.y = 1;
+
+        ++i;
+
+        while(i < roomName.length && (digit = parseInt(roomName[i])))
+        {
+            sum *= 10;
+            sum += digit;
+            ++i
+        }
+
+        splitObj.y *= sum;
+
+        return splitObj;
     }
 };
 

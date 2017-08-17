@@ -12,7 +12,7 @@ var roleReserver =
         }
         else if(creep.reserveController(creep.room.controller) == ERR_NOT_IN_RANGE) 
         {
-            creep.moveTo(creep.room.controller, {maxRooms:1});
+            creep.moveTo(creep.room.controller, {range:1, maxRooms:1});
         }
     }
 };

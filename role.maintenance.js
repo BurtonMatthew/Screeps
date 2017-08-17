@@ -19,7 +19,7 @@ var roleMaintenance = {
             {
                 if(creep.repair(target) == ERR_NOT_IN_RANGE) 
                 {
-                    creep.moveTo(target, {maxRooms:1});
+                    creep.moveTo(target, {maxRooms:1, range:3});
                 }
                 else if(target.hits == target.hitsMax)
                 {

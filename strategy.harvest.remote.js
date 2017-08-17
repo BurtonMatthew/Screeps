@@ -8,16 +8,22 @@ let strategyHarvest = require('strategy.harvest');
  /** @param {Room} room */
 function ensureRemoteHarvest(room)
 {
+    if(!room.controller || !room.controller.my || room.energyCapacityAvailable < 1100 || !room.storage)
+        return bTree.SUCCESS;
+    
     const exits = Game.map.describeExits(room.name);
     for(const exitDir in exits)
     {
+        if(exits[exitDir] === "E36S4" || exits[exitDir] === "E34S4")
+            continue;
+                
         bTree.sequence
         (
-             _.partial(ensureSources, exits[exitDir])
+             _.partial(strategyScout.ensureVision, exits[exitDir])
+            ,_.partial(ensureSources, exits[exitDir])
             ,_.partial(ensureNeutral, exits[exitDir]) // Todo switch for dealing with source keepers
-            ,_.partial(strategyScout.ensureVision, exits[exitDir])
-            ,_.partial(ensureDefenses, exits[exitDir])
-            ,_.partial(reserveController, exits[exitDir])            
+            ,_.partial(ensureDefenses, room, exits[exitDir])
+            ,_.partial(reserveController, room, exits[exitDir])            
             ,_.partial(spawnHarvesters, room, exits[exitDir])            
             ,_.partial(ensureInfrastructure, room.name, exits[exitDir])
         );
@@ -28,19 +34,29 @@ function ensureRemoteHarvest(room)
  /** @param {String} roomName */
 function ensureSources(roomName)
 {
-    if(Memory.mapInfo[roomName] !== undefined && Memory.mapInfo[roomName].sources.length > 0)
+    if(Game.rooms[roomName].find(FIND_SOURCES).length > 0)
         return bTree.SUCCESS;
     else
         return bTree.FAIL;
+    //if(Memory.mapInfo[roomName] !== undefined && Memory.mapInfo[roomName].sources.length > 0)
+    //    return bTree.SUCCESS;
+    //else
+    //    return bTree.FAIL;
 }
 
  /** @param {String} roomName */
 function ensureNeutral(roomName)
 {
-    if(Memory.mapInfo[roomName].hasController && Memory.mapInfo[roomName].controller.owner === undefined)
+    const room = Game.rooms[roomName];
+    if(room.controller && !room.controller.owner)
         return bTree.SUCCESS;
     else
         return bTree.FAIL;
+    //return bTree.SUCCESS;
+    //if(Memory.mapInfo[roomName].hasController && Memory.mapInfo[roomName].controller.owner === undefined)
+    //    return bTree.SUCCESS;
+    //else
+    //    return bTree.FAIL;
 }
 
  /** @param {String} sourceRoomName 
@@ -60,15 +76,15 @@ function ensureInfrastructure(sourceRoomName, destRoomName)
     if(Game.creeps["Maintenance_" + destRoomName] === undefined 
         /*&& destRoom.find(FIND_STRUCTURES, {filter: (struct) => struct.hits < struct.hitsMax * .7}).length > 0*/)
     {
-        utils.getCrossmapSpawner(destRoomName).createCreep([MOVE, MOVE, CARRY, CARRY, WORK, WORK]
+        utils.getAvailableSpawner(sourceRoom).createCreep([MOVE, MOVE, CARRY, CARRY, WORK, WORK]
             , "Maintenance_" + destRoomName
             , { role: 'maintenance', full: false, home: destRoomName });
     }
 
-    if(Memory.mapInfo[destRoomName].sources.length > 1 && Game.creeps["Maintenance_" + destRoomName + "_B"] === undefined 
+    if(Game.rooms[destRoomName].find(FIND_SOURCES).length > 1 && Game.creeps["Maintenance_" + destRoomName + "_B"] === undefined 
         /*&& destRoom.find(FIND_STRUCTURES, {filter: (struct) => struct.hits < struct.hitsMax * .7}).length > 0*/)
     {
-        utils.getCrossmapSpawner(destRoomName).createCreep([MOVE, MOVE, CARRY, CARRY, WORK, WORK]
+        utils.getAvailableSpawner(sourceRoom).createCreep([MOVE, MOVE, CARRY, CARRY, WORK, WORK]
             , "Maintenance_" + destRoomName + "_B"
             , { role: 'maintenance', full: false, home: destRoomName });
     }
@@ -81,7 +97,7 @@ function ensureInfrastructure(sourceRoomName, destRoomName)
     {
         utils.spawnToCount
         (
-            _.partial(utils.getCrossmapSpawner, destRoomName)
+            _.partial(utils.getAvailableSpawner, sourceRoom)
             , 1
             , [MOVE, MOVE, MOVE, WORK, WORK, CARRY, WORK, CARRY, CARRY]
             , "Builder_" + destRoomName + "_"
@@ -91,8 +107,10 @@ function ensureInfrastructure(sourceRoomName, destRoomName)
     }
 }
 
- /** @param {String} roomName */
-function reserveController(roomName)
+ /** @param {Room} homeRoom
+  *  @param {String} roomName 
+  */
+function reserveController(homeRoom, roomName)
 {
     const room = Game.rooms[roomName];
     if(!room.controller || (room.controller.reservation && room.controller.reservation.username === "Glenstorm" && room.controller.reservation.ticksToEnd > 3000))
@@ -100,7 +118,7 @@ function reserveController(roomName)
 
     if(Game.creeps["Reserve_" + roomName] === undefined)
     {
-        if(utils.getCrossmapSpawner(roomName).createCreep([MOVE, MOVE, CLAIM, CLAIM], "Reserve_" + roomName, {role:c.ROLE_RESERVER, home:roomName}) === OK)
+        if(utils.getAvailableSpawner(homeRoom).createCreep([MOVE, MOVE, CLAIM, CLAIM], "Reserve_" + roomName, {role:c.ROLE_RESERVER, home:roomName}) === OK)
             return bTree.INPROGRESS;
         else
             return bTree.FAIL;
@@ -117,15 +135,17 @@ function spawnHarvesters(homeRoom, roomName)
     return bTree.sequenceArray(_.partialRight(strategyHarvest.spawn,homeRoom),Game.rooms[roomName].find(FIND_SOURCES));
 }
 
- /** @param {String} roomName */
-function ensureDefenses(roomName)
+ /** @param {Room} homeRoom
+  *  @param {String} roomName 
+  */
+function ensureDefenses(homeRoom, roomName)
 {
     const room = Game.rooms[roomName];
     if(room.find(FIND_HOSTILE_CREEPS).length > 0)
     {
         if(Game.creeps["Fighter" + roomName] === undefined)
         {
-            utils.getCrossmapSpawner(roomName).createCreep([TOUGH,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK], "Fighter" + roomName, {role:c.ROLE_FIGHTER, home:roomName});
+            utils.getAvailableSpawner(homeRoom).createCreep([TOUGH,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK], "Fighter" + roomName, {role:c.ROLE_FIGHTER, home:roomName});
         }
         return bTree.INPROGRESS;
     }

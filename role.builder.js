@@ -2,10 +2,10 @@ let utils = require('utils');
 
 let priorityList =
 {
-    tower: 0,
-    container: 1,
-    link: 1,
-    spawn: 2,
+    tower: 1,
+    container: 2,
+    link: 2,
+    spawn: 1,
     storage: 2,
     extension: 3,
     extractor: 3,
@@ -27,7 +27,8 @@ var roleBuilder = {
     /** @param {Creep} creep **/
     run: function(creep) 
     {
-        if(!creep.memory.full)
+        if(utils.checkSwaps(creep)) {}
+        else if(!creep.memory.full)
         {
             creep.memory.full = utils.fillEnergy(creep);
         }
@@ -51,6 +52,8 @@ var roleBuilder = {
                         }, []))
                 .sortBy(n => creep.pos.getRangeTo(n))
                 .first();
+            
+            //var target = creep.room.find(FIND_MY_CONSTRUCTION_SITES)[0];
                 
             if(target)
             {
