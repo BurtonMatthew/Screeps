@@ -16,6 +16,8 @@ let roleScout = require('role.scout');
 let roleReserver = require('role.reserver');
 let roleTerminalDumper = require('role.terminalDumper');
 let roleRangedDefense = require('role.rangedDefense');
+let roleHealTroll = require('role.healTroll');
+let roleSourceKeeperKiller = require('role.sourceKeeperKiller');
 let roomExpansion = require('room.expansion');
 let strategyKeeperRoom = require('strategy.keeperRoom');
 let strategyAssault = require('strategy.assault');
@@ -41,7 +43,7 @@ profiler.registerObject(roleStorageLink, 'roleStorageLink');
 profiler.registerObject(roleScout, 'roleScout');
 profiler.registerObject(roleReserver, 'roleReserver');
 profiler.registerObject(roomExpansion, 'roomExpansion');
-profiler.regi
+//profiler.regi
 
 module.exports.loop = function () 
 {
@@ -161,6 +163,14 @@ module.exports.loop = function ()
             else if(creep.memory.role == "rangedDefense")
             {
                 roleRangedDefense.run(creep);
+            }
+            else if(creep.memory.role == "healTroll")
+            {
+                roleHealTroll.run(creep);
+            }
+            else if(creep.memory.role === "sourceKeeperKiller")
+            {
+                roleSourceKeeperKiller.run(creep);
             }
         }
 

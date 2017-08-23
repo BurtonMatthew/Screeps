@@ -15,7 +15,7 @@ var roleUpgrader = {
             if(upgradeError == ERR_NOT_IN_RANGE) 
             {
                 //creep.moveTo(creep.room.controller);
-                utils.moveTo(creep, creep.room.controller);
+                creep.moveTo(creep.room.controller, {range:2});
             }
             
             else if(upgradeError == OK && creep.memory.travelTime === undefined)
@@ -36,7 +36,7 @@ var roleUpgrader = {
                     creep.room.memory.linkReqEnergy = link.id;
             }
             
-            if(creep.room.storage !== undefined && creep.carry[RESOURCE_ENERGY] < creep.getActiveBodyparts(WORK))
+            if(creep.room.storage !== undefined && creep.carry[RESOURCE_ENERGY] <= creep.getActiveBodyparts(WORK))
             {
                 creep.withdraw(creep.room.storage, RESOURCE_ENERGY);
             }

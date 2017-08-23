@@ -34,7 +34,8 @@ var roleRangedDefense =
             //    creep.moveTo(rampart);
             //else
             creep.moveTo(clampPos(target.pos,3,46,3,46));
-            creep.rangedMassAttack();
+            creep.rangedAttack(target);
+            //creep.rangedMassAttack();
         }
         else if(creep.memory.flagNum === 0 && Game.flags["Rally"])
         {

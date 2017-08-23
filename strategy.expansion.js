@@ -38,7 +38,7 @@ function spawn(room)
                 
                 if(_.filter(Game.creeps, (creep) => creep.name == ("ExpMaintainer" + myControllers[i].room.name)).length < 1)
                 {
-                    utils.getAvailableSpawner(room).createCreep( [WORK, WORK, CARRY, CARRY, WORK, MOVE, MOVE, MOVE], ("ExpMaintainer" + myControllers[i].room.name), { role: 'maintenance', full: false, home: myControllers[i].room.name });
+                    utils.getAvailableSpawner(room).createCreep( [WORK,WORK,CARRY,CARRY,WORK,MOVE,MOVE,MOVE,MOVE,MOVE], ("ExpMaintainer" + myControllers[i].room.name), { role: 'maintenance', full: false, home: myControllers[i].room.name });
                     return bTree.INPROGRESS;
                 }
                 
@@ -46,11 +46,12 @@ function spawn(room)
                 {
                     if(_.filter(Game.creeps, (creep) => creep.name == ("ExpBuilder" + myControllers[i].room.name + j)).length < 1)
                     {
-                        utils.getAvailableSpawner(room).createCreep( [WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE], ("ExpBuilder" + myControllers[i].room.name + j), { role: 'builder', full: false, home: myControllers[i].room.name });
+                        utils.getAvailableSpawner(room).createCreep( [WORK,WORK,CARRY,CARRY,CARRY,MOVE,MOVE,MOVE,MOVE,MOVE], ("ExpBuilder" + myControllers[i].room.name + j), { role: 'builder', full: false, home: myControllers[i].room.name });
                         return bTree.INPROGRESS;
                     }
                 }
 
+                /*
                 for(var j=0; j<20; ++j)
                 {
                     if(_.filter(Game.creeps, (creep) => creep.name == ("ExpTruck" + myControllers[i].room.name + j)).length < 1)
@@ -59,6 +60,7 @@ function spawn(room)
                         return bTree.INPROGRESS;
                     }
                 }
+                */
 
             }
         }
@@ -69,7 +71,7 @@ function spawn(room)
 
 function getBestExpansionRoom()
 {
-    return "E34S3";
+    return "E31S4";
     var bestRoom = "";
     var bestRoomWeight = 0;
     var myMinerals = { O: 1, U: 1 }; // Todo actually scan these out

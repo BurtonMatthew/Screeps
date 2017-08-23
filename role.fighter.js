@@ -15,7 +15,8 @@ var roleFighter =
         {
             if(creep.attack(targets[0]) !== OK) 
             {
-                creep.rangedAttack(targets[0]);
+                var tar = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
+                creep.rangedAttack(tar);
                 if(creep.hits < creep.hitsMax)
                     creep.heal(creep);
             }

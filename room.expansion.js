@@ -6,6 +6,7 @@ let strategyExpansion = require('strategy.expansion');
 let strategyUpgrade = require('strategy.upgrade');
 let strategyBuild = require('strategy.build');
 let strategyHarvestRemote = require('strategy.harvest.remote');
+let strategyHarvestPower = require('strategy.harvest.power');
 let bTree = require('behaviourTree');
 
 
@@ -96,9 +97,6 @@ var roomExpansion = {
         const hostiles = room.find(FIND_HOSTILE_CREEPS);
         //if(!Game.creeps["Ranged"])
         //    Game.spawns["Spawn1"].createCreep([RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,MOVE,MOVE,MOVE], "Ranged", {role:"rangedDefense"});
-        
-        //if(hostiles.length > 1)
-        //    Game.spawns["Spawn1"].createCreep([RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,MOVE,MOVE,MOVE], "Ranged" + Math.floor(Math.random() * 1000000), {role:"rangedDefense"});
 
         bTree.sequence
         (
@@ -112,8 +110,17 @@ var roomExpansion = {
             ,_.partial(strategyExpansion.spawn, room)
             //,_.partial(ensureExplorers, room)
             //,_.partial(dumpToTerm, room)
+            //,_.partial(strategyHarvestPower.harvestPower, room)
+        );
+
+        bTree.sequence
+        (
+            _.partial(strategyHarvestPower.harvestPower, room)
         );
         
+        if(hostiles.length > 0)
+            utils.getAvailableSpawner(room).createCreep([RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,MOVE,MOVE,MOVE], "Ranged" + Math.floor(Math.random() * 1000000), {role:"rangedDefense"});
+
         //var rooms = ["E39S4", "E36S8", "E39S9"];
         /*
         if(!Game.creeps["FighterE39S4"])
@@ -140,6 +147,16 @@ var roomExpansion = {
         
         //Game.spawns["Spawn1"].createCreep([RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,MOVE,MOVE,MOVE], "Ranged" + Math.floor(Math.random() * 1000000), {role:"rangedDefense"});
 
+        /*
+        if(room == Game.rooms["E38S1"] || room == Game.rooms["E37S4"])
+        {
+            utils.spawnToCount(_.partial(utils.getAvailableSpawner, room)
+            , 20
+            , [TOUGH,TOUGH,TOUGH,TOUGH,TOUGH,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,HEAL,HEAL,HEAL,HEAL,HEAL]
+            , "War"
+            , {role: "fighter", home: "E38S5"});
+        }
+        */
         
         //const hostiles = room.find(FIND_HOSTILE_CREEPS);
         const towers = room.find(FIND_MY_STRUCTURES, {filter: (structure) => { return structure.structureType == STRUCTURE_TOWER; }});

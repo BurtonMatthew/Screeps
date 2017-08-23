@@ -25,7 +25,8 @@ function apply(room, layout)
     applyArray(room, layout.containers, STRUCTURE_ROAD);
     applyArray(room, layout.links, STRUCTURE_LINK);
     applyArray(room, layout.roads, STRUCTURE_ROAD);
-    applyArray(room, layout.walls, STRUCTURE_WALL);
+    if(room.name === "E31S4")
+        applyArray(room, layout.walls, STRUCTURE_WALL);
     applyArray(room, layout.ramparts, STRUCTURE_RAMPART);
     applyArray(room, layout.mines, STRUCTURE_EXTRACTOR);
     applyArray(room, layout.towers, STRUCTURE_TOWER);
@@ -369,7 +370,10 @@ function createRemoteHarvestLayout(sourceRoom, destRoom)
     layout.roads = [];
     layout.containers = [];
 
-    const sources = destRoom.find(FIND_SOURCES);
+    var sources = destRoom.find(FIND_SOURCES);
+    var extractors = destRoom.find(FIND_STRUCTURES, {filter: (s) => s.structureType === STRUCTURE_EXTRACTOR});
+    sources = sources.concat(extractors);
+
     for(var i=0, len = sources.length; i<len; ++i)
     {
         var startPos;
@@ -381,7 +385,7 @@ function createRemoteHarvestLayout(sourceRoom, destRoom)
 
         const pathInfo = PathFinder.search(startPos, {pos: sources[i].pos, range:1},
         {
-            plainCost: 3,
+            plainCost: 2,
             swampCost: 3,
             maxCost: Infinity,
             maxOps: 20000,

@@ -43,7 +43,11 @@ function spawn(source, homeRoom)
         // Look for a link
         const link = source.pos.findClosestByRange(FIND_MY_STRUCTURES, {filter: (struct) => struct.structureType == STRUCTURE_LINK });
         const hasLink = !isMineral && link && source.pos.inRangeTo(link, 2);
-        const container = source.pos.findClosestByRange(FIND_STRUCTURES, {filter: (struct) => struct.structureType == STRUCTURE_CONTAINER });
+        var container = source.pos.findClosestByRange(FIND_STRUCTURES, {filter: (struct) => struct.structureType == STRUCTURE_CONTAINER });
+        if(source.id === "59830030b097071b4adc3e5e")
+            container = Game.getObjectById("5997167db56b575b71771b73");
+        if(source.id === "59830014b097071b4adc3bca") // Hack, adjacent sources and containers blow up bad -- fix this
+            container = Game.getObjectById("598ec32f82fa171499d7faff");
         if(hasLink)
         {
             creepMem.linkId = link.id;
@@ -52,8 +56,6 @@ function spawn(source, homeRoom)
         {
             creepMem.standX = container.pos.x;
             creepMem.standY = container.pos.y;
-            if(source.id === "59830014b097071b4adc3bca") // Hack, adjacent sources and containers blow up bad -- fix this
-                creepMem.standY = 45;
             creepMem.standRoom = container.pos.roomName;
         }
         const spawner = isDistance ? utils.getAvailableSpawner(homeRoom) : utils.getClosestSpawner(source.pos);
@@ -63,14 +65,18 @@ function spawn(source, homeRoom)
     else if(harvestCreep.getActiveBodyparts(CARRY) == 0) // Drop miner
     {
         const dist = source.pos.getRangeTo(source.room.controller); // todo remote
-        const numHarvesters = homeRoom.energyCapacityAvailable >= 1500 ? 1 : (isDistance ? 2 : Math.ceil(dist / 20));
+        const numHaulers = homeRoom.energyCapacityAvailable >= 1500 ? 1 : (isDistance ? 2 : Math.ceil(dist / 20));
 
-        for(var i=0; i<numHarvesters; ++i)
+        for(var i=0; i<numHaulers; ++i)
         {
             const haulerCreep = Game.creeps["Hauler" + source.id + i];
             if(haulerCreep === undefined)
             {
-                const container = source.pos.findClosestByRange(FIND_STRUCTURES, {filter: (struct) => struct.structureType == STRUCTURE_CONTAINER });
+                var container = source.pos.findClosestByRange(FIND_STRUCTURES, {filter: (struct) => struct.structureType == STRUCTURE_CONTAINER });
+                if(source.id === "59830030b097071b4adc3e5e")
+                    container = Game.getObjectById("5997167db56b575b71771b73");
+                if(source.id === "59830014b097071b4adc3bca") // Hack, adjacent sources and containers blow up bad -- fix this
+                    container = Game.getObjectById("598ec32f82fa171499d7faff");
                 if(container && source.pos.isNearTo(container))
                 {
                     utils.getAvailableSpawner(homeRoom).createCreep(getBodyPartsHauler(source, homeRoom, isMineral), "Hauler" + source.id + i, 
@@ -93,16 +99,27 @@ function spawn(source, homeRoom)
         const refillerCreep = Game.creeps["Refiller" + source.room.name];
         if(refillerCreep === undefined)
         {
-            utils.getAvailableSpawner(source.room).createCreep([MOVE, CARRY, CARRY], "Refiller" + source.room.name, { role: 'refiller', home: source.room.name });
+            utils.getAvailableSpawner(source.room).createCreep([MOVE,CARRY,CARRY,MOVE,CARRY,CARRY], "Refiller" + source.room.name, { role: 'refiller', home: source.room.name });
             return bTree.INPROGRESS;
         }
 
+        /*
         const refillerCreep2 = Game.creeps["Refiller2" + source.room.name];
         if(refillerCreep2 === undefined)
         {
-            utils.getAvailableSpawner(source.room).createCreep([MOVE, CARRY, CARRY], "Refiller2" + source.room.name, { role: 'refiller', home: source.room.name });
+            utils.getAvailableSpawner(source.room).createCreep([MOVE,CARRY,CARRY,MOVE,CARRY,CARRY], "Refiller2" + source.room.name, { role: 'refiller', home: source.room.name });
             return bTree.INPROGRESS;
         }
+        */
+
+        /*
+        const refillerCreep3 = Game.creeps["Refiller3" + source.room.name];
+        if(refillerCreep3 === undefined)
+        {
+            utils.getAvailableSpawner(source.room).createCreep([MOVE, CARRY, CARRY], "Refiller3" + source.room.name, { role: 'refiller', home: source.room.name });
+            return bTree.INPROGRESS;
+        }
+        */
     }
     return bTree.SUCCESS;
 }
@@ -114,8 +131,6 @@ function getBodyPartsHarvester(source, spawnRoom, hasLink, isMineral)
     var parts = [];
     
     const numWork = Math.min(maxAffordableWorkParts, maxWorkParts);
-    for(var i=0; i<numWork; ++i)
-        parts.push(WORK);
 
     parts.push(MOVE);
     if(hasLink)
@@ -125,6 +140,9 @@ function getBodyPartsHarvester(source, spawnRoom, hasLink, isMineral)
         parts.push(MOVE);
         parts.push(MOVE);
     }
+
+    for(var i=0; i<numWork; ++i)
+        parts.push(WORK);
         
     return parts;
 }

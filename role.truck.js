@@ -35,8 +35,8 @@ var roleTruck = {
             }
             else
             {
-                 creep.moveTo(creep.room.controller);
-                 if(creep.pos.x > 4 && creep.pos.y > 4 && creep.pos.x < 46 && creep.pos.y < 46)
+                 creep.moveTo(creep.room.controller, {range:1});
+                 if(creep.pos.getRangeTo(creep.room.controller) < 3)
                  {
                      creep.drop(RESOURCE_ENERGY);
                  }

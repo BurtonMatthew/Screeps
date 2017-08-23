@@ -14,9 +14,9 @@ var utils =
                 //if(mapM.isHostile(roomName)) { return Infinity; }
                 if(fromRoomName == "E37S7" && roomName == "E38S7") { return Infinity; }
                 // Dodge source keeper rooms for now
-                const roomCoord = utils.splitRoomname(roomName);
-                if(Math.abs((Math.abs(roomCoord.x) % 10) - 5) < 2 && 
-                    Math.abs((Math.abs(roomCoord.y) % 10) - 5) < 2)  { return Infinity; }
+                //const roomCoord = utils.splitRoomname(roomName);
+                //if(Math.abs((Math.abs(roomCoord.x) % 10) - 5) < 2 && 
+                //    Math.abs((Math.abs(roomCoord.y) % 10) - 5) < 2)  { return Infinity; }
 
                 return 1;
             }});
@@ -370,6 +370,35 @@ var utils =
         splitObj.y *= sum;
 
         return splitObj;
+    },
+
+    roomCoordToName: function(roomCoord)
+    {
+        var result = "";
+        if(roomCoord.x < 0)
+            result += "W";
+        else
+            result += "E";
+
+        result += Math.abs(roomCoord.x);
+
+        if(roomCoord.y < 0)
+            result += "N";
+        else
+            result += "S";
+
+        result += Math.abs(roomCoord.y);
+        return result;
+    },
+
+    isSourceKeeperRoom: function(roomName)
+    {
+        const roomCoord = utils.splitRoomname(roomName);
+        //if(roomName == "E39S5")
+        //    console.log(Math.abs((Math.abs(roomCoord.x) % 10) - 5) < 2);
+        if(Math.abs((Math.abs(roomCoord.x) % 10) - 5) < 2 && 
+            Math.abs((Math.abs(roomCoord.y) % 10) - 5) < 2)  { return true; }
+        else { return false; }
     }
 };
 

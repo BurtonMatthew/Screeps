@@ -41,8 +41,8 @@ var roleStaticHarvester = {
             const harvestError = creep.harvest(source)
             if(harvestError == ERR_NOT_IN_RANGE && !didMove) 
             {
-                //creep.moveTo(source, {range: 1});
-                didMove = utils.moveTo(creep, source, {range: 1}) == OK;
+                didMove = creep.moveTo(source, {range: 1}) == OK;
+                //didMove = utils.moveTo(creep, source, {range: 1}) == OK;
             }
             else if(harvestError == OK && creep.memory.travelTime === undefined)
             {
